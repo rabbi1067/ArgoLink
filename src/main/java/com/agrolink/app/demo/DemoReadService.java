@@ -45,6 +45,7 @@ public class DemoReadService {
     private final UserRepository userRepository;
     private final MessageService messageService;
     private final InvoiceService invoiceService;
+    private final com.agrolink.app.service.SuggestionService suggestionService;
     private final com.agrolink.app.service.DashboardService dashboardService;
 
     // ------------------------------------------------------------ dashboard
@@ -199,7 +200,6 @@ public class DemoReadService {
                 .filter(u -> u.getRole() != Role.ADMIN && u.getRole() != Role.SUPER_ADMIN)
                 .toList();
     }
-
     public Object usersByRole(String role, DemoAccounts.Entry demo) {
         Role requested = parseRole(role);
         if (demo.role() != Role.SUPER_ADMIN
@@ -208,6 +208,20 @@ public class DemoReadService {
                     "Only a Super Admin can view admin accounts", 403);
         }
         return userRepository.findByRole(requested);
+    }
+
+    // ------------------------------------------------------------ suggestions
+
+    /**
+     * Demo buyer sees the picks of the first real buyer (same showcase rule
+     * as the dashboard), so the strip shows genuine history-based cards.
+     */
+    public Object buyerSuggestions(DemoAccounts.Entry demo) {
+        String buyerId = userRepository.findByRole(Role.BUYER).stream()
+                .map(User::getId)
+                .findFirst()
+                .orElse(demo.userId());
+        return suggestionService.suggestForBuyer(buyerId);
     }
 
     private Role parseRole(String role) {

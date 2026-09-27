@@ -331,6 +331,11 @@ public class DemoAuthFilter extends OncePerRequestFilter {
             data = readService.allUsers(demo);
         } else if (path.startsWith("/api/v1/users/by-role/")) {
             data = readService.usersByRole(path.substring("/api/v1/users/by-role/".length()), demo);
+        } else if ("/api/v1/suggestions/buyer".equals(path)
+                && demo.role() == com.agrolink.app.model.Role.BUYER) {
+            // Buyer-only strip: other demo roles fall through to the real
+            // chain, where the role gate answers 403.
+            data = readService.buyerSuggestions(demo);
         } else {
             data = demoDetail(request, demo);
         }

@@ -106,6 +106,10 @@ window.Pages.produce = {
             this.populateCategoryOptions();
             this.populateLocationOptions();
 
+            if (this.isBuyer()) {
+                this.loadSuggest();
+            }
+
             if (this.isManager()) {
                 await this.loadOwn();
             } else {
@@ -121,6 +125,75 @@ window.Pages.produce = {
         const res = await Api.get(this.isAdmin() ? "/produce/manage" : "/produce/my");
         this.listings = res.data || [];
         this.render();
+    },
+
+    /**
+     * Buyer-only "AI Suggest" strip: picks computed from the buyer's own
+     * orders and offers. Empty history (or any failure) hides the section.
+     */
+    async loadSuggest() {
+        const wrap = this.$("#suggestWrap");
+        if (!wrap) return;
+        try {
+            const res = await Api.get("/suggestions/buyer");
+            this.renderSuggest(wrap, res.data || []);
+        } catch (error) {
+            wrap.hidden = true;
+            wrap.innerHTML = "";
+        }
+    },
+
+    renderSuggest(wrap, picks) {
+        if (!picks.length) {
+            wrap.hidden = true;
+            wrap.innerHTML = "";
+            return;
+        }
+        wrap.hidden = false;
+        wrap.innerHTML = `
+            <div class="suggest-head">
+                <span aria-hidden="true">✨</span>
+                <strong>AI Suggest</strong>
+                <span class="text-muted">Picked from your orders and offers</span>
+            </div>
+            <div class="suggest-row">
+                ${picks.map((pick) => this.suggestCard(pick)).join("")}
+            </div>`;
+    },
+
+    suggestCard(pick) {
+        const price = Number(pick.pricePerUnit || 0).toLocaleString("en-IN", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        });
+        const sold = this.suggestSold(pick.soldQuantity);
+        const badgeClass = pick.badge === "Best Selling" ? "suggest-best-selling"
+            : pick.badge === "Best Value" ? "suggest-best-value"
+                : pick.badge === "Most Repurchased" ? "suggest-most-repurchased"
+                    : "suggest-lowest-price";
+        const image = this.safeImage(pick.imageUrl);
+        return `
+            <article class="suggest-card">
+                <span class="suggest-badge ${badgeClass}">${this.esc(pick.badge || "")}</span>
+                ${image ? `<img class="suggest-img" src="${image}" alt="${this.esc(pick.cropName || "Suggested crop")}" loading="lazy">` : ""}
+                <div class="suggest-price">৳${price}<span class="text-muted"> / ${this.esc(pick.unit || "kg")}</span></div>
+                <p class="suggest-name">${this.esc(pick.cropName || "Unnamed produce")}</p>
+                <div class="suggest-meta">
+                    ${sold ? `<span class="suggest-chip">${sold} SOLD</span>` : ""}
+                    ${(pick.repurchaseRatePct || 0) > 0 ? `<span class="suggest-chip">${pick.repurchaseRatePct}% Repurchase</span>` : ""}
+                </div>
+                <button type="button" class="btn btn-primary btn-sm btn-block" data-action="offer" data-id="${this.esc(pick.listingId)}">Make an Offer</button>
+            </article>`;
+    },
+
+    suggestSold(quantity) {
+        const value = Number(quantity || 0);
+        if (!value) return "";
+        if (value >= 1000) {
+            const trimmed = (value / 1000).toFixed(1).replace(/\.0$/, "");
+            return `${trimmed}k`;
+        }
+        return `${value}`;
     },
 
     async loadPage(page) {
@@ -305,6 +378,8 @@ window.Pages.produce = {
         if (!grid) return;
         grid.addEventListener("click", (event) => this.handleGridClick(event));
         grid.addEventListener("submit", (event) => this.handleStockSubmit(event));
+        const suggest = this.$("#suggestWrap");
+        if (suggest) suggest.addEventListener("click", (event) => this.handleGridClick(event));
     },
 
     bindModals() {
@@ -815,9 +890,19 @@ window.Pages.produce = {
 
     /* ------------------------------------------------------------ offer modal */
 
-    openOfferModal(id) {
+    async openOfferModal(id) {
         const items = this.pageData && this.pageData.items ? this.pageData.items : [];
-        const listing = items.find((l) => l.id === id);
+        let listing = items.find((l) => l.id === id);
+        if (!listing) {
+            // Suggestion cards are outside the current grid page: load the
+            // listing directly so "Make an Offer" works from there too.
+            try {
+                const res = await Api.get(`/produce/${id}`);
+                listing = res.data || null;
+            } catch (error) {
+                listing = null;
+            }
+        }
         if (!listing) return;
         this.offerListing = listing;
 
