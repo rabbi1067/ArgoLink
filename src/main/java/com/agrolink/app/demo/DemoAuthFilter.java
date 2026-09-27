@@ -94,6 +94,10 @@ public class DemoAuthFilter extends OncePerRequestFilter {
             reject(response, HttpServletResponse.SC_FORBIDDEN, "Demo mode is disabled");
             return;
         }
+        if (isAssistantChat(request)) {
+            writeAssistant(request, response, demo);
+            return;
+        }
         if (isBlockedForDemo(request)) {
             reject(response, HttpServletResponse.SC_FORBIDDEN,
                     "Demo mode is read-only. Explore everything, but changes are disabled.");
@@ -226,6 +230,40 @@ public class DemoAuthFilter extends OncePerRequestFilter {
     private boolean isProfileRequest(HttpServletRequest request) {
         return "GET".equalsIgnoreCase(request.getMethod())
                 && "/api/v1/users/me".equals(request.getRequestURI());
+    }
+
+    /**
+     * Talking to the AI writes nothing, so demo accounts are allowed through
+     * here while every other POST stays blocked. Rate limits still apply.
+     */
+    private boolean isAssistantChat(HttpServletRequest request) {
+        return "POST".equalsIgnoreCase(request.getMethod())
+                && "/api/v1/assistant/chat".equals(request.getRequestURI());
+    }
+
+    private void writeAssistant(HttpServletRequest request, HttpServletResponse response,
+                                DemoAccounts.Entry demo) throws IOException {
+        byte[] body;
+        try {
+            body = request.getInputStream().readAllBytes();
+        } catch (Exception ex) {
+            reject(response, HttpServletResponse.SC_BAD_REQUEST, "Malformed request body");
+            return;
+        }
+        try {
+            writeData(response, readService.assistantChat(demo, body));
+        } catch (com.agrolink.app.exception.ResourceNotFoundException ex) {
+            reject(response, HttpServletResponse.SC_NOT_FOUND, ex.getMessage());
+        } catch (com.agrolink.app.exception.BusinessRuleException ex) {
+            int status = ex.getStatus() >= 400 && ex.getStatus() < 600
+                    ? ex.getStatus() : HttpServletResponse.SC_BAD_REQUEST;
+            reject(response, status, ex.getMessage());
+        } catch (RuntimeException ex) {
+            org.slf4j.LoggerFactory.getLogger(DemoAuthFilter.class)
+                    .warn("Demo assistant failed", ex);
+            reject(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "The assistant is unavailable right now");
+        }
     }
 
     /**

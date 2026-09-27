@@ -46,6 +46,7 @@ public class DemoReadService {
     private final MessageService messageService;
     private final InvoiceService invoiceService;
     private final com.agrolink.app.service.SuggestionService suggestionService;
+    private final com.agrolink.app.service.AssistantService assistantService;
     private final com.agrolink.app.service.DashboardService dashboardService;
 
     // ------------------------------------------------------------ dashboard
@@ -222,6 +223,40 @@ public class DemoReadService {
                 .findFirst()
                 .orElse(demo.userId());
         return suggestionService.suggestForBuyer(buyerId);
+    }
+
+    // ------------------------------------------------------------- assistant
+
+    /**
+     * Lets demo accounts actually talk to AgroLink AI Assist. A synthetic
+     * user (same id, role and location the demo already shows) is built
+     * in memory - nothing is written anywhere. Validation mirrors the
+     * controller's rules so junk input gets the same 400 answers.
+     */
+    public Object assistantChat(DemoAccounts.Entry demo, byte[] body) {
+        com.agrolink.app.dto.AssistantChatRequest request;
+        try {
+            request = new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readValue(body, com.agrolink.app.dto.AssistantChatRequest.class);
+        } catch (Exception ex) {
+            throw new com.agrolink.app.exception.BusinessRuleException("Malformed request body", 400);
+        }
+        if (request == null || request.message() == null || request.message().isBlank()) {
+            throw new com.agrolink.app.exception.BusinessRuleException("Message is required", 400);
+        }
+        if (request.message().length() > 1000) {
+            throw new com.agrolink.app.exception.BusinessRuleException(
+                    "Message must be at most 1000 characters", 400);
+        }
+        User user = User.builder()
+                .id(demo.userId())
+                .name(demo.name())
+                .email(demo.email())
+                .role(demo.role())
+                .location("Dhaka, Bangladesh")
+                .isActive(true)
+                .build();
+        return assistantService.chat(user, request);
     }
 
     private Role parseRole(String role) {

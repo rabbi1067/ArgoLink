@@ -7,7 +7,10 @@ spring:
       max-request-size: ${MAX_REQUEST_SIZE:5MB}
   data:
     mongodb:
-      uri: ${MONGODB_URI:mongodb+srv://ss:I6AeyE24ZrVEpeQp@springmongo.zhwoqy8.mongodb.net/rabbi2?appName=springMongo}
+      # No default: fail fast with a clear error instead of silently pointing
+      # somewhere. Set MONGODB_URI env (see .env.example). Local: run MongoDB
+      # on mongodb://localhost:27017/agrolink and export that URI.
+      uri: ${MONGODB_URI:mongodb://localhost:27017/agrolink}
       auto-index-creation: true
   cache:
     type: simple
@@ -59,14 +62,19 @@ agrolink:
       writes-per-hour: ${AGROLINK_AUTO_SUSPEND_WRITES_PER_HOUR:60}
       registers-per-hour-per-ip: ${AGROLINK_AUTO_SUSPEND_REGISTERS_PER_HOUR:20}
   jwt:
-    secret: ${JWT_SECRET:agrolink-super-secret-signing-key-please-replace-in-production-2026}
+    # No default secret: the app refuses to start without JWT_SECRET, so a
+    # forgotten env var can never silently sign tokens with a public key.
+    secret: ${JWT_SECRET:}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4200,http://localhost:8081}
   cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME:nxsbcchx}
-    api-key: ${CLOUDINARY_API_KEY:643727394488173}
-    api-secret: ${CLOUDINARY_API_SECRET:ADi4BP1ZmQt1c1ovQnVJ0vaCKSk}
+    # No credentials committed: without them image uploads fall back to
+    # MongoDB storage (works, just not CDN). Set the three env vars for
+    # Cloudinary (see .env.example).
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+    api-key: ${CLOUDINARY_API_KEY:}
+    api-secret: ${CLOUDINARY_API_SECRET:}
     avatar-folder: ${CLOUDINARY_AVATAR_FOLDER:agrolink/avatars}
     produce-folder: ${CLOUDINARY_PRODUCE_FOLDER:agrolink/produce}
   brevo:

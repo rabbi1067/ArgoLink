@@ -47,7 +47,7 @@ One pill button next to day/night mode flips the **entire project** — landing,
 <td>
 
 ### 👀 Read-only demo mode
-One-click logins: **Super Admin / Admin / Buyer / Farmer** (`Demo1234!`). Zero database footprint, full-project visibility with live data, writes blocked with a friendly popup. One env flag turns it off. Delete the `demo` package + `demo.js` and it's gone.
+One-click logins: **Super Admin / Admin / Buyer / Farmer** (`Demo1234!`). Zero database footprint, full-project visibility with live data, AI Assist fully working, writes blocked with a friendly popup. One env flag turns it off. Delete the `demo` package + `demo.js` and it's gone.
 
 </td>
 </tr>
@@ -107,15 +107,18 @@ First boot seeds only the super admin (`superadmin@agrolink.com` / `admin123`) a
 
 | Variable | Purpose |
 |---|---|
-| `MONGODB_URI` | Atlas connection string |
-| `JWT_SECRET` | 64+ random chars in production |
+| `MONGODB_URI` | Atlas connection string (**required** — local default points at localhost) |
+| `JWT_SECRET` | 64+ random chars (**required** — the app refuses to start without it) |
 | `EMAILJS_SERVICE_ID/_TEMPLATE_ID/_PUBLIC_KEY/_PRIVATE_KEY` | Forgot-password emails (console mode without) |
-| `CLOUDINARY_CLOUD_NAME/_API_KEY/_API_SECRET` | Image uploads |
+| `CLOUDINARY_CLOUD_NAME/_API_KEY/_API_SECRET` | Image uploads (MongoDB fallback without) |
 | `GEMINI_API_KEY` | AI assistant (disabled without) |
 | `AGROLINK_DEMO_ENABLED` | `true` = public demo logins |
 | `AGROLINK_RATE_LIMIT_*` / `AGROLINK_AUTO_SUSPEND_*` | Abuse tuning |
 
-> Never commit secrets — they live in the host's environment.
+> Copy `.env.example` locally. **No real secrets are committed** — `application.yml`
+> ships only blank placeholders and safe local fallbacks. If a secret ever
+> leaks into git, **rotate it** (Atlas password, Cloudinary secret, JWT secret)
+> because history never forgets.
 
 ---
 

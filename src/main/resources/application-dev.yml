@@ -18,9 +18,9 @@ agrolink:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4200,http://localhost:8080}
   cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME:nxsbcchx}
-    api-key: ${CLOUDINARY_API_KEY:643727394488173}
-    api-secret: ${CLOUDINARY_API_SECRET:ADi4BP1ZmQt1c1ovQnVJ0vaCKSk}
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+    api-key: ${CLOUDINARY_API_KEY:}
+    api-secret: ${CLOUDINARY_API_SECRET:}
     avatar-folder: ${CLOUDINARY_AVATAR_FOLDER:agrolink/avatars}
     produce-folder: ${CLOUDINARY_PRODUCE_FOLDER:agrolink/produce}
 

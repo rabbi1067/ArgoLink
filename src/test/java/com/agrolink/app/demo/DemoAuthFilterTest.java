@@ -165,4 +165,46 @@ class DemoAuthFilterTest {
         filter.doFilter(json("POST", "/api/v1/auth/login", payload), response, chain);
         assertTrue(seen.get() != null && seen.get().contains("real@x.com"));
     }
+
+    @Test
+    void demoAssistantChat_answersWithoutTouchingChain() throws Exception {
+        com.agrolink.app.service.AssistantService assistant =
+                (com.agrolink.app.service.AssistantService) Proxy.newProxyInstance(
+                        getClass().getClassLoader(),
+                        new Class<?>[]{com.agrolink.app.service.AssistantService.class},
+                        (proxy, method, args) ->
+                                new com.agrolink.app.dto.AssistantChatResponse("demo answer"));
+        DemoReadService reads = new DemoReadService(
+                null, null, null, null, null, null, null, null, assistant, null);
+        DemoAuthFilter demoFilter = new DemoAuthFilter(
+                new JwtUtils(SECRET, 3_600_000L), userRepository(), reads,
+                new com.fasterxml.jackson.databind.ObjectMapper()
+                        .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule()));
+        ReflectionTestUtils.setField(demoFilter, "enabled", true);
+
+        String token = demoLogin();
+        AtomicInteger passed = new AtomicInteger();
+        FilterChain chain = (req, res) -> passed.incrementAndGet();
+        MockHttpServletRequest request =
+                json("POST", "/api/v1/assistant/chat", "{\"message\":\"hi\"}");
+        request.addHeader("Authorization", "Bearer " + token);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        demoFilter.doFilter(request, response, chain);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(0, passed.get());
+        assertTrue(response.getContentAsString().contains("demo answer"));
+    }
+
+    private UserRepository userRepository() {
+        return (UserRepository) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class<?>[]{UserRepository.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("findByEmail")) {
+                        return repoAnswer;
+                    }
+                    throw new UnsupportedOperationException(method.getName());
+                });
+    }
 }
