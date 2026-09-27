@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WeatherServiceImpl implements WeatherService {
 
     private static final String OPEN_METEO = "https://api.open-meteo.com/v1/forecast";
+    private static final String WEATHERAPI_URL = "https://api.weatherapi.com/v1/forecast.json";
     private static final String PROVIDER = "Open-Meteo (open-meteo.com · CC-BY-4.0)";
     private static final String UNITS = "°C · % · mm · km/h · hPa · WMO";
     private static final int MAX_DAYS = 7;
@@ -46,6 +48,9 @@ public class WeatherServiceImpl implements WeatherService {
 
     private final ObjectMapper objectMapper;
     private final CacheManager cacheManager;
+
+    @Value("${agrolink.weatherapi.api-key:}")
+    private String weatherApiKey;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(8))
@@ -142,6 +147,14 @@ public class WeatherServiceImpl implements WeatherService {
 
     /** Returns a fresh forecast, or {@code null} if anything about the live call went wrong. */
     private WeatherForecastDTO fetchLive(String name) {
+        WeatherForecastDTO live = fetchOpenMeteo(name);
+        if (live != null) {
+            return live;
+        }
+        return fetchWeatherApi(name);
+    }
+
+    private WeatherForecastDTO fetchOpenMeteo(String name) {
         GeoPoint p = BangladeshLocationRegions.coordinatesOf(name).orElseThrow();
         String division = BangladeshLocationRegions.divisionOf(name).orElse("Bangladesh");
         String url = OPEN_METEO + "?latitude=" + p.latitude() + "&longitude=" + p.longitude()
@@ -243,8 +256,117 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
-    private WeatherForecastDTO.Current parseCurrent(JsonNode cur, List<DailyForecastDTO> days) {
-        Double temp = numNode(cur.path("temperature_2m"));
+    /**
+     * Fallback provider for hosts whose shared IP Open-Meteo rate-limits.
+     * WeatherAPI.com quotas per API key, so one Render box cannot starve
+     * another. Only runs when a key is configured and Open-Meteo just failed.
+     */
+    private WeatherForecastDTO fetchWeatherApi(String name) {
+        if (weatherApiKey == null || weatherApiKey.isBlank()) {
+            return null;
+        }
+        GeoPoint p = BangladeshLocationRegions.coordinatesOf(name).orElse(null);
+        if (p == null) {
+            return null;
+        }
+        String division = BangladeshLocationRegions.divisionOf(name).orElse("Bangladesh");
+        String url = WEATHERAPI_URL + "?key=" + weatherApiKey.trim()
+                + "&q=" + p.latitude() + "," + p.longitude()
+                + "&days=" + MAX_DAYS + "&aqi=no&alerts=no";
+        try {
+            HttpResponse<String> resp = httpClient.send(
+                    HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(15)).GET().build(),
+                    HttpResponse.BodyHandlers.ofString());
+            if (resp.statusCode() != 200) {
+                log.warn("WeatherAPI returned HTTP {} for {}", resp.statusCode(), name);
+                return null;
+            }
+            JsonNode root = objectMapper.readTree(resp.body());
+            List<DailyForecastDTO> days = new ArrayList<>();
+            JsonNode forecastDays = root.path("forecast").path("forecastday");
+            if (forecastDays.isArray()) {
+                for (JsonNode dayNode : forecastDays) {
+                    JsonNode d = dayNode.path("day");
+                    JsonNode cond = d.path("condition");
+                    int wmo = wmoFromWeatherApi(cond.path("code").asInt(-1));
+                    days.add(new DailyForecastDTO(
+                            LocalDate.parse(dayNode.path("date").asText()),
+                            numNode(d.path("maxtemp_c")),
+                            numNode(d.path("mintemp_c")),
+                            null, null,
+                            intNode(d.path("daily_chance_of_rain")),
+                            numNode(d.path("totalprecip_mm")),
+                            null,
+                            numNode(d.path("maxwind_kph")),
+                            null, null,
+                            numNode(d.path("totalsnow_cm")),
+                            numNode(d.path("uv")),
+                            null, null,
+                            wmo,
+                            cond.path("text").asText(null),
+                            WeatherCodes.icon(wmo, true),
+                            null, null, null, null));
+                }
+            }
+            if (days.isEmpty()) {
+                log.warn("WeatherAPI returned no daily data for {}", name);
+                return null;
+            }
+            JsonNode cur = root.path("current");
+            JsonNode cCond = cur.path("condition");
+            int wmo = wmoFromWeatherApi(cCond.path("code").asInt(-1));
+            JsonNode isDay = cur.path("is_day");
+            Boolean day = (isDay.isMissingNode() || isDay.isNull()) ? null : isDay.asInt() == 1;
+            WeatherForecastDTO.Current current = new WeatherForecastDTO.Current(
+                    numNode(cur.path("temp_c")),
+                    numNode(cur.path("feelslike_c")),
+                    numNode(cur.path("wind_kph")),
+                    numNode(cur.path("gust_kph")),
+                    intNode(cur.path("wind_degree")),
+                    numNode(cur.path("precip_mm")),
+                    null,
+                    numNode(cur.path("humidity")),
+                    numNode(cur.path("cloud")),
+                    numNode(cur.path("pressure_mb")),
+                    null,
+                    wmo,
+                    cCond.path("text").asText(null),
+                    WeatherCodes.icon(wmo, day == null || day),
+                    day,
+                    cur.path("last_updated").asText(null),
+                    null, null);
+            if (current.temperatureC() == null) {
+                log.warn("WeatherAPI payload for {} had no temperature", name);
+                return null;
+            }
+            log.info("WeatherAPI served {} (Open-Meteo unavailable)", name);
+            return new WeatherForecastDTO(name, division, p.latitude(), p.longitude(), days.size(),
+                    UNITS, current, days, Instant.now(), "WeatherAPI.com", false, false, DISCLAIMER);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (Exception ex) {
+            log.warn("WeatherAPI fetch failed for {}: {}", name, ex.toString());
+            return null;
+        }
+    }
+
+    /** WeatherAPI condition codes to the WMO-ish codes the UI understands. */
+    private static int wmoFromWeatherApi(int code) {
+        return switch (code) {
+            case 1000 -> 0;
+            case 1003 -> 1;
+            case 1006, 1009 -> 3;
+            case 1030, 1135, 1147 -> 45;
+            case 1063, 1150, 1153, 1180, 1183, 1240 -> 61;
+            case 1186, 1189, 1192, 1195, 1243, 1246, 1198, 1201, 1204, 1207, 1249, 1252 -> 65;
+            case 1210, 1213, 1216, 1219, 1222, 1225, 1237, 1255, 1258, 1261, 1264 -> 71;
+            case 1087, 1273, 1276, 1279, 1282 -> 95;
+            default -> 3;
+        };
+    }
+
+    private WeatherForecastDTO.Current parseCurrent(JsonNode cur, List<DailyForecastDTO> days) {        Double temp = numNode(cur.path("temperature_2m"));
         if (temp == null) {
             return null;
         }

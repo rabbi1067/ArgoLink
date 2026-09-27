@@ -84,6 +84,11 @@ agrolink:
     api-key: ${BREVO_API_KEY:}
     sender-email: ${BREVO_SENDER_EMAIL:}
     sender-name: ${BREVO_SENDER_NAME:AgroLink}
+  weatherapi:
+    # Fallback forecast provider for hosts whose shared IP Open-Meteo
+    # rate-limits (HTTP 429). Free key at weatherapi.com (1M calls/month,
+    # quota per key, no card). Left blank, Open-Meteo is the only source.
+    api-key: ${WEATHERAPI_KEY:}
   emailjs:
     # Client asked for EmailJS. Free signup at emailjs.com, connect an email
     # service, then create a template whose "To Email" is {{user_email}} and
