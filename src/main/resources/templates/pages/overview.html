@@ -1,38 +1,38 @@
 <section class="page dashboard-page" data-dashboard-view="STANDARD">
     <div class="dashboard-header">
         <div>
-            <p class="section-eyebrow">Overview</p>
-            <h1 class="section-title" id="overview-greeting">Welcome back</h1>
+            <p class="section-eyebrow" data-i18n="ov.eyebrow">Overview</p>
+            <h1 class="section-title" id="overview-greeting" data-i18n="ov.greeting">Welcome back</h1>
             <p class="text-muted overview-date" id="overview-date"></p>
         </div>
         <div class="dashboard-header-actions">
             <span class="badge badge-info" id="overview-scope" hidden></span>
-            <button type="button" class="btn btn-secondary btn-sm" data-overview-csv>Export CSV</button>
-            <button type="button" class="btn btn-secondary btn-sm" data-overview-refresh>Refresh</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-overview-csv data-i18n="page.exportCsv">Export CSV</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-overview-refresh data-i18n="page.refresh">Refresh</button>
         </div>
     </div>
 
     <div class="dashboard-section" id="overview-weather"></div>
 
     <!-- Only shown when the backend reports something that needs a person to act. -->
-    <section class="attention" id="overview-attention" hidden aria-label="Needs your attention"></section>
+    <section class="attention" id="overview-attention" hidden aria-label="Needs your attention" data-i18n-aria="page.attention"></section>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 dashboard-card-grid" id="overview-stats"></div>
 
     <div class="section-heading" id="overview-trends-heading" hidden>
-        <h2 class="section-title">Trends</h2>
-        <p class="section-subtitle">Built from your own records, month by month.</p>
+        <h2 class="section-title" data-i18n="ov.trends">Trends</h2>
+        <p class="section-subtitle" data-i18n="ov.trendsSub">Built from your own records, month by month.</p>
     </div>
     <div class="grid grid-cols-1" id="overview-charts"></div>
 
     <div class="section-heading" id="overview-tables-heading" hidden>
-        <h2 class="section-title">Your records</h2>
-        <p class="section-subtitle">Latest 5 shown, View more opens the full page.</p>
+        <h2 class="section-title" data-i18n="ov.records">Your records</h2>
+        <p class="section-subtitle" data-i18n="page.latest5">Latest 5 shown, View more opens the full page.</p>
     </div>
     <div class="grid grid-cols-1" id="overview-tables"></div>
 
     <div class="section-heading">
-        <h2 class="section-title">Recent activity</h2>
+        <h2 class="section-title" data-i18n="page.recentActivity">Recent activity</h2>
         <p class="section-subtitle" id="overview-activity-count"></p>
     </div>
     <div class="card" id="overview-activity"></div>

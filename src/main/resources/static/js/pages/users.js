@@ -27,7 +27,7 @@ window.Pages.users = {
 
         if (!this.isAdmin) {
             const wrap = this.container.querySelector("#usersTableWrap");
-            if (wrap) wrap.innerHTML = '<div class="empty-state">Admins only.</div>';
+            if (wrap) wrap.innerHTML = `<div class="empty-state">${window.t ? t("usr.adminOnly") : "Admins only."}</div>`;
             const addButton = this.container.querySelector("#usersAddBtn");
             if (addButton) addButton.hidden = true;
             return;
@@ -35,7 +35,9 @@ window.Pages.users = {
 
         // Both Admin and Super Admin can open the create form; the label/options differ by role.
         const addButton = this.container.querySelector("#usersAddBtn");
-        if (addButton) addButton.textContent = this.isSuperAdmin ? "+ Create Admin / User" : "+ Create User";
+        if (addButton) addButton.textContent = this.isSuperAdmin
+            ? (window.t ? t("usr.createAdminUser") : "+ Create Admin / User")
+            : (window.t ? t("usr.create") : "+ Create User");
 
         // A plain Admin never sees or filters by Admin/Super Admin roles.
         if (!this.isSuperAdmin) {
@@ -49,6 +51,12 @@ window.Pages.users = {
 
         this.bindControls();
         this.load();
+        if (!this._langBound) {
+            this._langBound = true;
+            document.addEventListener("langchange", () => {
+                if (this.container && this.container.isConnected) this.load();
+            });
+        }
     },
 
     // Renders instantly from the last cached list (if any) for a fast first paint,
@@ -225,7 +233,9 @@ window.Pages.users = {
     async handleBulkDelete() {
         const ids = Array.from(this.selected);
         if (!ids.length) return;
-        const ok = await this.confirmAction(`Delete ${ids.length} selected user(s)? This cannot be undone.`);
+        const ok = await this.confirmAction(window.t && window.I18n && I18n.getLang() === "bn"
+            ? `নির্বাচিত ${ids.length} জন ব্যবহারকারী মুছবেন? ফেরত হবে না।`
+            : `Delete ${ids.length} selected user(s)? This cannot be undone.`);
         if (!ok) return;
 
         try {
@@ -243,13 +253,18 @@ window.Pages.users = {
             const id = toggleBtn.dataset.id;
             const active = toggleBtn.dataset.active === "true";
             const actionText = active ? "deactivate" : "activate";
+            const bn = window.t && window.I18n && I18n.getLang() === "bn";
 
-            const ok = await this.confirmAction(`Do you want to ${actionText} this user?`);
+            const ok = await this.confirmAction(bn
+                ? (active ? "এই ব্যবহারকারীকে নিষ্ক্রিয় করবেন?" : "এই ব্যবহারকারীকে সক্রিয় করবেন?")
+                : `Do you want to ${actionText} this user?`);
             if (!ok) return;
 
             Api.patch(`/users/${id}/status`, { active: !active })
                 .then(() => {
-                    if (window.Toast) Toast.success(`User ${actionText}d`);
+                    if (window.Toast) Toast.success(bn
+                        ? (active ? "ব্যবহারকারী নিষ্ক্রিয় হয়েছে" : "ব্যবহারকারী সক্রিয় হয়েছে")
+                        : `User ${actionText}d`);
                     this.load();
                 })
                 .catch((error) => {
@@ -269,12 +284,14 @@ window.Pages.users = {
         if (deleteBtn) {
             const id = deleteBtn.dataset.id;
             const user = this.users.find((u) => u.id === id);
-            const ok = await this.confirmAction(`Delete ${user ? this.esc(user.name || user.email) : "this user"}? This cannot be undone.`);
+            const ok = await this.confirmAction(window.t && window.I18n && I18n.getLang() === "bn"
+                ? `${user ? this.esc(user.name || user.email) : "এই ব্যবহারকারী"} মুছবেন? ফেরত হবে না।`
+                : `Delete ${user ? this.esc(user.name || user.email) : "this user"}? This cannot be undone.`);
             if (!ok) return;
 
             try {
                 await Api.del(`/users/${id}`);
-                if (window.Toast) Toast.success("User deleted");
+                if (window.Toast) Toast.success(window.t ? t("usr.deleted") : "User deleted");
                 this.selected.delete(id);
                 this.load();
             } catch (error) {
@@ -373,18 +390,18 @@ window.Pages.users = {
                         <td>${this.esc(user.location || "—")}</td>
                         <td>
                             ${user.active === false
-                    ? '<span class="badge badge-error">Inactive</span>'
-                    : '<span class="badge badge-success">Active</span>'}
+                    ? `<span class="badge badge-error">${window.t ? t("usr.inactiveBadge") : "Inactive"}</span>`
+                    : `<span class="badge badge-success">${window.t ? t("usr.activeBadge") : "Active"}</span>`}
                         </td>
                         <td>
                             ${manageable
                     ? `
                                 <div class="flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-secondary" data-user-edit data-id="${this.esc(user.id)}">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-secondary" data-user-edit data-id="${this.esc(user.id)}">${window.t ? t("usr.edit") : "Edit"}</button>
                                     <button type="button" class="btn btn-sm ${user.active === false ? "btn-primary" : "btn-danger"}" data-user-toggle data-id="${this.esc(user.id)}" data-active="${user.active === false ? "false" : "true"}">
-                                        ${user.active === false ? "Activate" : "Deactivate"}
+                                        ${user.active === false ? (window.t ? t("usr.activate") : "Activate") : (window.t ? t("usr.deactivate") : "Deactivate")}
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-danger" data-user-delete data-id="${this.esc(user.id)}">Delete</button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-user-delete data-id="${this.esc(user.id)}">${window.t ? t("usr.delete") : "Delete"}</button>
                                 </div>`
                     : '<span class="text-muted">—</span>'}
                         </td>
@@ -398,13 +415,13 @@ window.Pages.users = {
                     <thead>
                         <tr>
                             <th></th>
-                            <th>User</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Phone</th>
-                            <th>Location</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>${window.t ? t("usr.thUser") : "User"}</th>
+                            <th>${window.t ? t("usr.thEmail") : "Email"}</th>
+                            <th>${window.t ? t("usr.thRole") : "Role"}</th>
+                            <th>${window.t ? t("usr.thPhone") : "Phone"}</th>
+                            <th>${window.t ? t("usr.thLocation") : "Location"}</th>
+                            <th>${window.t ? t("usr.thStatus") : "Status"}</th>
+                            <th>${window.t ? t("usr.thActions") : "Actions"}</th>
                         </tr>
                     </thead>
                     <tbody>${rows}</tbody>
@@ -426,7 +443,9 @@ window.Pages.users = {
         const modal = this.container.querySelector("#userModal");
         const form = this.container.querySelector("#userForm");
         const title = this.container.querySelector("#userModalTitle");
-        if (title) title.textContent = this.isSuperAdmin ? "Create Admin / User" : "Create User";
+        if (title) title.textContent = this.isSuperAdmin
+            ? (window.t ? t("usr.createAdminTitle") : "Create Admin / User")
+            : (window.t ? t("usr.createTitle") : "Create User");
         if (form) form.reset();
         this.populateRoles();
         if (modal) this.openModal(modal);
@@ -437,10 +456,10 @@ window.Pages.users = {
         if (!roleSelect) return;
         const current = roleSelect.value;
         roleSelect.innerHTML =
-            '<option value="">Select role</option>' +
-            '<option value="FARMER">Farmer</option>' +
-            '<option value="BUYER">Buyer</option>' +
-            (this.isSuperAdmin ? '<option value="ADMIN">Admin</option>' : "");
+            `<option value="">${window.t ? t("usr.selectRole") : "Select role"}</option>` +
+            `<option value="FARMER">${window.t ? t("role.farmer") : "Farmer"}</option>` +
+            `<option value="BUYER">${window.t ? t("role.buyer") : "Buyer"}</option>` +
+            (this.isSuperAdmin ? `<option value="ADMIN">${window.t ? t("role.admin") : "Admin"}</option>` : "");
         roleSelect.value = current;
     },
 
@@ -473,11 +492,13 @@ window.Pages.users = {
         const location = this.container.querySelector("#userEditLocation").value.trim() || null;
 
         if (name.length < 2) {
-            if (window.Toast) Toast.error("Name must be at least 2 characters");
+            if (window.Toast) Toast.error(window.t ? t("usr.nameShort") : "Name must be at least 2 characters");
             return;
         }
 
-        const ok = await this.confirmAction("Save changes to this user?");
+        const ok = await this.confirmAction(window.t && window.I18n && I18n.getLang() === "bn"
+            ? "এই ব্যবহারকারীর পরিবর্তন সংরক্ষণ করবেন?"
+            : "Save changes to this user?");
         if (!ok) return;
 
         const form = this.container.querySelector("#userEditForm");
@@ -500,7 +521,7 @@ window.Pages.users = {
                 }
             }
 
-            if (window.Toast) Toast.success("User updated");
+            if (window.Toast) Toast.success(window.t ? t("usr.updated") : "User updated");
             this.closeModal(this.container.querySelector("#userEditModal"));
             this.load();
         } catch (error) {
@@ -529,7 +550,7 @@ window.Pages.users = {
         };
 
         if (!body.name || !body.email || body.password.length < 8) {
-            if (window.Toast) Toast.error("Fill all required fields");
+            if (window.Toast) Toast.error(window.t ? t("usr.fillRequired") : "Fill all required fields");
             return;
         }
 
@@ -542,7 +563,7 @@ window.Pages.users = {
 
         try {
             await Api.post("/users", body);
-            if (window.Toast) Toast.success("User created");
+            if (window.Toast) Toast.success(window.t ? t("usr.created") : "User created");
             this.closeModal(this.container.querySelector("#userModal"));
             this.load();
         } catch (error) {

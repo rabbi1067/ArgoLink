@@ -88,19 +88,19 @@
             '<button type="button" class="ai-btn" id="ai-min-btn" title="Minimize" aria-label="Minimize">&#8211;</button>' +
             '<button type="button" class="ai-btn" id="ai-close-btn" title="Close" aria-label="Close">&#10005;</button>' +
             '</div>' +
-            '<div class="ai-banner">AI answers about orders, produce and platform usage. It can make mistakes, so verify important details.</div>' +
+            `<div class="ai-banner">${window.t ? t("ai.banner") : "AI answers about orders, produce and platform usage. It can make mistakes, so verify important details."}</div>` +
             '<div id="ai-quick-chips">' +
-            '<button type="button" class="ai-chip" data-q="How do I place an offer?">&#128161; How to place an offer?</button>' +
-            '<button type="button" class="ai-chip" data-q="How do I confirm an order?">&#128230; How to confirm an order?</button>' +
-            '<button type="button" class="ai-chip" data-q="Where do I find the weather forecast?">&#127788; Weather forecast?</button>' +
-            '<button type="button" class="ai-chip" data-q="How do I download an invoice?">&#128220; Download invoice?</button>' +
+            `<button type="button" class="ai-chip" data-q="How do I place an offer?">&#128161; ${window.t ? t("ai.chipOffer") : "How to place an offer?"}</button>` +
+            `<button type="button" class="ai-chip" data-q="How do I confirm an order?">&#128230; ${window.t ? t("ai.chipConfirm") : "How to confirm an order?"}</button>` +
+            `<button type="button" class="ai-chip" data-q="Where do I find the weather forecast?">&#127788; ${window.t ? t("ai.chipWeather") : "Weather forecast?"}</button>` +
+            `<button type="button" class="ai-chip" data-q="How do I download an invoice?">&#128220; ${window.t ? t("ai.chipInvoice") : "Download invoice?"}</button>` +
             '</div>' +
             '<div id="ai-chat-body"></div>' +
             '<div id="ai-input-bar">' +
-            '<textarea id="ai-text-input" rows="1" placeholder="Ask about orders, produce or platform usage&hellip;"></textarea>' +
-            '<button type="button" id="ai-send-btn" title="Send" aria-label="Send">&#10148;</button>' +
+            `<textarea id="ai-text-input" rows="1" placeholder="${window.t ? t("ai.placeholder") : "Ask about orders, produce or platform usage&hellip;"}"></textarea>` +
+            `<button type="button" id="ai-send-btn" title="${window.t ? t("ai.send") : "Send"}" aria-label="${window.t ? t("ai.send") : "Send"}">&#10148;</button>` +
             '</div>' +
-            '<div class="ai-disclaimer">AI-generated answers &mdash; verify before acting. Not a substitute for professional agronomic, financial or legal advice.</div>';
+            `<div class="ai-disclaimer">${window.t ? t("ai.disclaimer") : "AI-generated answers &mdash; verify before acting. Not a substitute for professional agronomic, financial or legal advice."}</div>`;
 
         document.body.appendChild(w);
 
@@ -112,7 +112,7 @@
         }
         if (restored.length === 0) {
             state.history = [];
-            addMessage("bot", "Hello! I can help with orders, produce, weather location and platform usage. Choose a quick question below or type your own.");
+            addMessage("bot", window.t ? t("ai.hello") : "Hello! I can help with orders, produce, weather location and platform usage. Choose a quick question below or type your own.");
         } else {
             state.history = restored;
             restored.forEach(function (m) {

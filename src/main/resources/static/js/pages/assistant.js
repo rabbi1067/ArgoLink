@@ -12,7 +12,7 @@ window.Pages.assistant = {
         const form = this.container.querySelector("#assistantForm");
         const input = this.container.querySelector("#assistantInput");
         const disclaimer = this.container.querySelector("#assistantDisclaimer");
-        if (disclaimer) disclaimer.textContent = "Rule-based guidance only. Not a substitute for verified agronomic expertise.";
+        if (disclaimer) disclaimer.textContent = window.t ? t("as.disclaimer") : "Rule-based guidance only. Not a substitute for verified agronomic expertise.";
         const resetBtn = this.container.querySelector("#assistantResetBtn");
         if (resetBtn) resetBtn.addEventListener("click", () => this.clear());
 
@@ -32,7 +32,7 @@ window.Pages.assistant = {
         const wrap = this.container.querySelector("#assistantMessages");
         const tpl = this.container.querySelector("#assistantMsgTpl");
 
-        const loadingHtml = (tpl ? (() => { const n = tpl.content.firstElementChild.cloneNode(true); n.querySelector(".assistant-text").textContent = "Thinking..."; return n; })() : null);
+        const loadingHtml = (tpl ? (() => { const n = tpl.content.firstElementChild.cloneNode(true); n.querySelector(".assistant-text").textContent = window.t ? t("as.thinking") : "Thinking..."; return n; })() : null);
         const loadingNode = loadingHtml;
         if (wrap && loadingNode) wrap.appendChild(loadingNode);
 
@@ -40,7 +40,7 @@ window.Pages.assistant = {
             const res = await Api.post("/assistant/ask", { message: text });
             if (wrap && loadingNode) loadingNode.querySelector(".assistant-text").textContent = res.data && res.data.reply ? res.data.reply : "Sorry, I could not answer that.";
         } catch (e) {
-            if (wrap && loadingNode) loadingNode.querySelector(".assistant-text").textContent = "Could not reach the assistant. Please try again.";
+            if (wrap && loadingNode) loadingNode.querySelector(".assistant-text").textContent = window.t ? t("as.unreachable") : "Could not reach the assistant. Please try again.";
         }
         if (wrap) wrap.scrollTop = wrap.scrollHeight;
     },
@@ -58,6 +58,6 @@ window.Pages.assistant = {
 
     clear() {
         const wrap = this.container.querySelector("#assistantMessages");
-        if (wrap) wrap.innerHTML = '<div class="empty-state">Ask me about crops, orders, or platform usage.</div>';
+        if (wrap) wrap.innerHTML = `<div class="empty-state">${window.t ? t("as.emptyShort") : "Ask me about crops, orders, or platform usage."}</div>`;
     },
 };

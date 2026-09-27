@@ -38,7 +38,11 @@ const Router = (() => {
     /** Landing page after login, and fallback for any URL the role may not open. */
     const defaultRoute = () => ROLE_HOME[role()] || DEFAULT_ROUTE;
 
-    const labelFor = (route) => (ROUTES[route] ? ROUTES[route].label : "");
+    const labelFor = (route) => {
+        if (!ROUTES[route]) return "";
+        if (window.I18n) return I18n.t("route." + route);
+        return ROUTES[route].label;
+    };
     const iconFor = (route) => (ROUTES[route] ? ROUTES[route].icon : "");
 
     const loadedControllers = new Set();
@@ -203,6 +207,7 @@ const Router = (() => {
         iconFor,
         allowedRoutes,
         parseRoute,
+        highlight,
         go,
         navigate,
         start,

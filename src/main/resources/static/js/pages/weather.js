@@ -29,6 +29,7 @@ window.Pages.weather = {
         this.district = select ? await U.fillDistricts(select, await U.userDistrict()) : await U.userDistrict();
 
         this.bind();
+        this.bindLang();
         this.loadForecast();
     },
 
@@ -90,7 +91,7 @@ window.Pages.weather = {
                 ? matches.map((d, i) =>
                     `<li role="option" class="wx-search-item${i === active ? " is-active" : ""}" data-district="${U.esc(d)}" aria-selected="${i === active}">${U.esc(d)}</li>`
                 ).join("")
-                : '<li class="wx-search-empty">No district found</li>';
+                : `<li class="wx-search-empty">${window.t ? t("wx.noDistrict") : "No district found"}</li>`;
             list.hidden = false;
             input.setAttribute("aria-expanded", "true");
             const el = list.querySelector(".is-active");
@@ -159,7 +160,9 @@ window.Pages.weather = {
         const spinner = btn.querySelector(".wx-spinner");
         const label = btn.querySelector(".wx-refresh-label");
         if (spinner) spinner.hidden = !busy;
-        if (label) label.textContent = busy && refreshing ? "Refreshing..." : "Refresh";
+        if (label) label.textContent = busy && refreshing
+            ? (window.t && window.I18n && I18n.getLang() === "bn" ? "রিফ্রেশ হচ্ছে..." : "Refreshing...")
+            : (window.t ? t("common.refresh") : "Refresh");
     },
 
     async loadForecast(refresh = false) {
@@ -169,7 +172,7 @@ window.Pages.weather = {
         const dailyEl = this.$("#weatherDaily");
 
         this.setBusy(true, refresh);
-        if (currentEl) currentEl.innerHTML = '<div class="empty-state">Loading forecast...</div>';
+        if (currentEl) currentEl.innerHTML = `<div class="empty-state">${window.t ? t("wx.loading") : "Loading forecast..."}</div>`;
         if (dailyEl) dailyEl.innerHTML = "";
 
         try {
@@ -197,17 +200,18 @@ window.Pages.weather = {
         const U = window.WeatherUtil;
         const currentEl = this.$("#weatherCurrent");
         const dailyEl = this.$("#weatherDaily");
-        const msg = (d && d.disclaimer) || `Could not load the forecast${detail ? ": " + detail : "."}`;
+        const T = (en, key) => (window.t ? t(key) : en);
+        const msg = (d && d.disclaimer) || `${T("Could not load the forecast", "wx.unavailable")}${detail ? ": " + detail : "."}`;
         if (currentEl) {
             currentEl.innerHTML = `
                 <div class="empty-state">
                     <p class="mb-2">${U.esc(msg)}</p>
-                    <button type="button" class="btn btn-primary" data-wx-retry>Try again</button>
+                    <button type="button" class="btn btn-primary" data-wx-retry>${T("Try again", "wx.tryAgain")}</button>
                 </div>`;
             const retry = currentEl.querySelector("[data-wx-retry]");
             if (retry) retry.addEventListener("click", () => this.loadForecast(true));
         }
-        if (dailyEl) dailyEl.innerHTML = '<div class="empty-state">7-day outlook unavailable right now.</div>';
+        if (dailyEl) dailyEl.innerHTML = `<div class="empty-state">${T("7-day outlook unavailable right now.", "wx.noData")}</div>`;
     },
 
     renderCurrent(d) {
@@ -220,6 +224,7 @@ window.Pages.weather = {
         const desc = cur.description || today.description || "";
         const wind = cur.windKmh !== null && cur.windKmh !== undefined ? cur.windKmh : today.windMaxKmh;
         const place = [d.district, d.division && d.division !== d.district ? d.division : null].filter(Boolean).join(", ");
+        const T = (en, key) => (window.t ? t(key) : en);
 
         el.innerHTML = `
             <div class="flex flex-wrap items-center justify-between gap-4">
@@ -228,13 +233,13 @@ window.Pages.weather = {
                     <div>
                         <h2 class="section-title mb-0" style="font-size: 1.75rem;">${U.fmt(cur.temperatureC)} C</h2>
                         <p class="mb-0" style="font-weight: 600;">${U.esc(U.longLabel(today.date))}</p>
-                        <p class="text-muted mb-0">${U.esc(place)} - ${U.esc(desc)} - High ${U.fmt(today.tempMaxC)} C / Low ${U.fmt(today.tempMinC)} C</p>
+                        <p class="text-muted mb-0">${U.esc(place)} - ${U.esc(desc)} - ${T("High", "wx.high")} ${U.fmt(today.tempMaxC)} C / ${T("Low", "wx.low")} ${U.fmt(today.tempMinC)} C</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="mb-0">Rain ${U.fmt(today.rainSumMm)} mm</p>
-                    <p class="mb-0">Wind ${U.fmt(wind)} km/h</p>
-                    <p class="text-muted mb-0" style="font-size: 0.75rem;">Updated ${U.esc(U.updatedLabel(d.generatedAt))}${d.stale ? " - last saved data" : ""}</p>
+                    <p class="mb-0">${T("Rain", "wx.rain")} ${U.fmt(today.rainSumMm)} mm</p>
+                    <p class="mb-0">${T("Wind", "wx.wind")} ${U.fmt(wind)} km/h</p>
+                    <p class="text-muted mb-0" style="font-size: 0.75rem;">${T("Updated", "wx.updated")} ${U.esc(U.updatedLabel(d.generatedAt))}${d.stale ? (window.t ? ` - ${t("wx.stale")}` : " - last saved data") : ""}</p>
                 </div>
             </div>`;
     },
@@ -251,7 +256,7 @@ window.Pages.weather = {
             const q = (s) => node.querySelector(s);
 
             q(".weather-day-icon").textContent = U.icon(day.weatherCode);
-            q(".weather-day").textContent = (i === 0 ? "Today - " : "") + U.shortLabel(day.date);
+            q(".weather-day").textContent = (i === 0 ? (window.t ? `${t("wx.today")} - ` : "Today - ") : "") + U.shortLabel(day.date);
             q(".weather-temp").textContent = `${U.fmt(day.tempMaxC)} C / ${U.fmt(day.tempMinC)} C`;
             q(".weather-desc").textContent = day.description || "";
             const prob = day.rainProbabilityPct === null || day.rainProbabilityPct === undefined ? "--" : day.rainProbabilityPct;
@@ -275,13 +280,24 @@ window.Pages.weather = {
 
         const badge = this.$("#weatherSummaryBadge");
         if (!badge) return;
+        const T = (en, key) => (window.t ? t(key) : en);
         if (!d || d.fallback || !d.daily || !d.daily.length) {
-            badge.textContent = "Unavailable";
+            badge.textContent = T("Unavailable", "wx.unavailableBadge");
         } else if (d.stale) {
-            badge.textContent = "Last saved data";
+            badge.textContent = T("Last saved data", "wx.lastSaved");
         } else {
             const total = d.daily.reduce((sum, day) => sum + (Number(day.rainSumMm) || 0), 0);
-            badge.textContent = `Total rain ${total.toFixed(1)} mm`;
+            badge.textContent = window.t && window.I18n && I18n.getLang() === "bn"
+                ? `মোট বৃষ্টি ${total.toFixed(1)} মিমি`
+                : `Total rain ${total.toFixed(1)} mm`;
         }
+    },
+
+    bindLang() {
+        if (this._langBound) return;
+        this._langBound = true;
+        document.addEventListener("langchange", () => {
+            if (this.container && this.container.isConnected) this.loadForecast();
+        });
     },
 };

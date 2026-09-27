@@ -11,10 +11,17 @@ window.WeatherUtil = (function () {
     if (window.WeatherUtil && window.WeatherUtil.__shared) return window.WeatherUtil;
 
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const DAYS_BN = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
     const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const MONTHS_BN = ["জানু", "ফেব্রু", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টে", "অক্টো", "নভে", "ডিসে"];
     const EVT = "agrolink:weather-district";
     const DEFAULT_DISTRICT = "Dhaka";
     let districtsPromise = null;
+
+    const isBn = () => window.I18n && I18n.getLang() === "bn";
+    const dayName = (dt) => (isBn() ? DAYS_BN : DAYS)[dt.getDay()];
+    const monthName = (dt) => (isBn() ? MONTHS_BN : MONTHS)[dt.getMonth()];
+    const L = (en, key) => (window.t ? t(key) : en);
 
     const esc = (v) =>
         String(v === null || v === undefined ? "" : v)
@@ -33,13 +40,13 @@ window.WeatherUtil = (function () {
     /** "Wed, 23 Sep" */
     function shortLabel(iso) {
         const dt = toDate(iso);
-        return dt ? `${DAYS[dt.getDay()].slice(0, 3)}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}` : "—";
+        return dt ? `${dayName(dt).slice(0, 3)}, ${dt.getDate()} ${monthName(dt)}` : "—";
     }
 
     /** "Wednesday, 23 Sep" */
     function longLabel(iso) {
         const dt = toDate(iso);
-        return dt ? `${DAYS[dt.getDay()]}, ${dt.getDate()} ${MONTHS[dt.getMonth()]}` : "—";
+        return dt ? `${dayName(dt)}, ${dt.getDate()} ${monthName(dt)}` : "—";
     }
 
     function todayIso() {
@@ -50,7 +57,7 @@ window.WeatherUtil = (function () {
     function updatedLabel(iso) {
         const dt = iso ? new Date(iso) : null;
         if (!dt || Number.isNaN(dt.getTime())) return "—";
-        return `${dt.getDate()} ${MONTHS[dt.getMonth()]}, ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
+        return `${dt.getDate()} ${monthName(dt)}, ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
     }
 
     /** Open-Meteo WMO weather code -> emoji icon. */
@@ -74,12 +81,12 @@ window.WeatherUtil = (function () {
         const rain = day.rainSumMm, wind = day.windMaxKmh, tmax = day.tempMaxC, code = day.weatherCode;
         if (rain === null && tmax === null) return null;
         if ((code !== null && code >= 95) || (wind !== null && wind >= 40)) {
-            return { label: "⚠️ Storm Alert", cls: "badge-error" };
+            return { label: `⚠️ ${L("Storm Alert", "wx.storm")}`, cls: "badge-error" };
         }
-        if (rain !== null && rain > 5) return { label: "🌧️ Rain Warning", cls: "badge-warning" };
-        if (tmax !== null && tmax >= 36) return { label: "🔥 Heat Stress", cls: "badge-warning" };
-        if (rain !== null && rain <= 1) return { label: "🌾 Good for Harvest", cls: "badge-success" };
-        return { label: "🌦️ Light Rain – Plan Ahead", cls: "badge-info" };
+        if (rain !== null && rain > 5) return { label: `🌧️ ${L("Rain Warning", "wx.rainWarn")}`, cls: "badge-warning" };
+        if (tmax !== null && tmax >= 36) return { label: `🔥 ${L("Heat Stress", "wx.heat")}`, cls: "badge-warning" };
+        if (rain !== null && rain <= 1) return { label: `🌾 ${L("Good for Harvest", "wx.harvest")}`, cls: "badge-success" };
+        return { label: `🌦️ ${L("Light Rain – Plan Ahead", "wx.lightRain")}`, cls: "badge-info" };
     }
 
     /** Every time the page opens it starts on Dhaka (no remembered district). */

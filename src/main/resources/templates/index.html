@@ -27,18 +27,19 @@
         </a>
 
         <nav class="navbar-links" aria-label="Primary">
-            <a href="#home" class="nav-link">Home</a>
-            <a href="#explore" class="nav-link">Explore Crops</a>
-            <a href="#about" class="nav-link">About</a>
-            <a href="#contact" class="nav-link">Contact</a>
+            <a href="#home" class="nav-link" data-i18n="nav.home">Home</a>
+            <a href="#explore" class="nav-link" data-i18n="nav.explore">Explore Crops</a>
+            <a href="#about" class="nav-link" data-i18n="nav.about">About</a>
+            <a href="#contact" class="nav-link" data-i18n="nav.contact">Contact</a>
         </nav>
 
         <div class="navbar-actions">
-            <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" title="Toggle day/night theme">
+            <button type="button" class="lang-toggle" data-lang-toggle aria-label="Switch to Bangla">বাংলা</button>
+            <button type="button" class="theme-toggle" data-theme-toggle data-i18n-aria="shell.theme" data-i18n-title="shell.theme" aria-label="Toggle day/night theme" title="Toggle day/night theme">
                 <svg data-theme-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                 <svg data-theme-icon="sun" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
             </button>
-            <button type="button" class="btn btn-primary btn-sm" data-auth-open>
+            <button type="button" class="btn btn-primary btn-sm" data-auth-open data-i18n="nav.login">
                 Login / Sign Up
             </button>
         </div>
@@ -50,20 +51,20 @@
     <section id="home" class="hero section scroll-mt-20">
         <div class="container grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
             <div>
-                <p class="section-eyebrow">B2B Agro-Supply Chain Platform</p>
+                <p class="section-eyebrow" data-i18n="hero.eyebrow">B2B Agro-Supply Chain Platform</p>
                 <h1 class="text-4xl md:text-5xl font-extrabold mt-3 leading-tight">
-                    Farm to market,<br>
-                    <span class="text-emerald-600 dark:text-emerald-400">directly &amp; transparently.</span>
+                    <span data-i18n="hero.title1">Farm to market,</span><br>
+                    <span class="text-emerald-600 dark:text-emerald-400" data-i18n="hero.title2">directly &amp; transparently.</span>
                 </h1>
-                <p class="section-subtitle mt-4">
+                <p class="section-subtitle mt-4" data-i18n="hero.sub">
                     AgroLink connects verified farmers with professional buyers. Negotiate offers,
                     lock in prices, and track every order through a secure digital supply chain.
                 </p>
                 <div class="flex flex-wrap gap-3 mt-6">
-                    <button type="button" class="btn btn-primary btn-lg" data-explore>
+                    <button type="button" class="btn btn-primary btn-lg" data-explore data-i18n="hero.explore">
                         Explore Available Crops
                     </button>
-                    <button type="button" class="btn btn-secondary btn-lg" data-auth-open-register>
+                    <button type="button" class="btn btn-secondary btn-lg" data-auth-open-register data-i18n="hero.sell">
                         Start Selling as a Farmer
                     </button>
                 </div>
@@ -72,15 +73,15 @@
             <div class="grid grid-cols-3 gap-4">
                 <div class="stat card !p-6">
                     <div class="stat-value" id="statFarmers">500+</div>
-                    <div class="stat-label">Registered Farmers</div>
+                    <div class="stat-label" data-i18n="hero.statFarmers">Registered Farmers</div>
                 </div>
                 <div class="stat card !p-6">
                     <div class="stat-value" id="statBuyers">1,200+</div>
-                    <div class="stat-label">Registered Buyers</div>
+                    <div class="stat-label" data-i18n="hero.statBuyers">Registered Buyers</div>
                 </div>
                 <div class="stat card !p-6">
                     <div class="stat-value" id="statListings">3,000+</div>
-                    <div class="stat-label">Live Listings</div>
+                    <div class="stat-label" data-i18n="hero.statListings">Live Listings</div>
                 </div>
             </div>
         </div>
@@ -90,25 +91,25 @@
         <div class="container">
             <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
                 <div>
-                    <p class="section-eyebrow">Live Marketplace</p>
-                    <h2 class="section-title">Public Crop Explorer</h2>
-                    <p class="section-subtitle mb-0">
+                    <p class="section-eyebrow" data-i18n="explore.eyebrow">Live Marketplace</p>
+                    <h2 class="section-title" data-i18n="explore.title">Public Crop Explorer</h2>
+                    <p class="section-subtitle mb-0" data-i18n="explore.sub">
                         Browse fresh produce listed by verified farmers in real time.
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <input id="cropSearch" class="input" type="search" placeholder="Search crop name..." aria-label="Search crops">
-                    <select id="categoryFilter" class="select" aria-label="Filter by category">
-                        <option value="">All categories</option>
+                    <input id="cropSearch" class="input" type="search" placeholder="Search crop name..." aria-label="Search crops" data-i18n-ph="explore.searchPh" data-i18n-aria="explore.searchLabel">
+                    <select id="categoryFilter" class="select" aria-label="Filter by category" data-i18n-aria="explore.categoryLabel">
+                        <option value="" data-i18n="explore.allCategories">All categories</option>
                     </select>
-                    <button type="button" class="btn btn-secondary btn-sm" data-explore-refresh aria-label="Refresh produce listings">
+                    <button type="button" class="btn btn-secondary btn-sm" data-explore-refresh aria-label="Refresh produce listings" data-i18n-aria="explore.refreshLabel" data-i18n="explore.refresh">
                         Refresh
                     </button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="cropGrid" aria-live="polite">
-                <div class="empty-state">Loading produce listings...</div>
+                <div class="empty-state" data-i18n="explore.loading">Loading produce listings...</div>
             </div>
             <div id="cropSeeMore" class="see-more-wrap" hidden></div>
         </div>
@@ -117,9 +118,9 @@
     <section id="about" class="section scroll-mt-20" style="background-color: var(--color-surface);">
         <div class="container">
             <div class="text-center mx-auto" style="max-width: 42rem;">
-                <p class="section-eyebrow">About AgroLink</p>
-                <h2 class="section-title">A digital supply chain built for agriculture</h2>
-                <p class="section-subtitle mx-auto">
+                <p class="section-eyebrow" data-i18n="about.eyebrow">About AgroLink</p>
+                <h2 class="section-title" data-i18n="about.title">A digital supply chain built for agriculture</h2>
+                <p class="section-subtitle mx-auto" data-i18n="about.sub">
                     We remove middlemen and guesswork, giving both sides of the trade
                     visibility, control, and speed.
                 </p>
@@ -128,29 +129,29 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
                 <div class="card">
                     <div class="icon-box mb-3">🌱</div>
-                    <h3 class="card-title">Direct Sourcing</h3>
-                    <p class="text-muted mt-2">
+                    <h3 class="card-title" data-i18n="about.direct">Direct Sourcing</h3>
+                    <p class="text-muted mt-2" data-i18n="about.directText">
                         Buy straight from verified farms - fresher stock, fewer intermediaries.
                     </p>
                 </div>
                 <div class="card">
                     <div class="icon-box mb-3">⚖️</div>
-                    <h3 class="card-title">Fair Pricing</h3>
-                    <p class="text-muted mt-2">
+                    <h3 class="card-title" data-i18n="about.fair">Fair Pricing</h3>
+                    <p class="text-muted mt-2" data-i18n="about.fairText">
                         Transparent listings and counter-offers let both sides agree on price.
                     </p>
                 </div>
                 <div class="card">
                     <div class="icon-box mb-3">🔒</div>
-                    <h3 class="card-title">Secure Orders</h3>
-                    <p class="text-muted mt-2">
+                    <h3 class="card-title" data-i18n="about.secure">Secure Orders</h3>
+                    <p class="text-muted mt-2" data-i18n="about.secureText">
                         Offers are locked with atomic quantity reservations, preventing overselling.
                     </p>
                 </div>
                 <div class="card">
                     <div class="icon-box mb-3">🚚</div>
-                    <h3 class="card-title">End-to-End Tracking</h3>
-                    <p class="text-muted mt-2">
+                    <h3 class="card-title" data-i18n="about.tracking">End-to-End Tracking</h3>
+                    <p class="text-muted mt-2" data-i18n="about.trackingText">
                         Follow every order from confirmation to delivery within one dashboard.
                     </p>
                 </div>
@@ -161,9 +162,9 @@
     <section id="contact" class="section scroll-mt-20" style="background-color: var(--color-surface);">
         <div class="container">
             <div class="text-center mx-auto" style="max-width: 42rem;">
-                <p class="section-eyebrow">Contact</p>
-                <h2 class="section-title">Get in touch</h2>
-                <p class="section-subtitle mx-auto">
+                <p class="section-eyebrow" data-i18n="contact.eyebrow">Contact</p>
+                <h2 class="section-title" data-i18n="contact.title">Get in touch</h2>
+                <p class="section-subtitle mx-auto" data-i18n="contact.sub">
                     Questions about selling, sourcing, or partnering with AgroLink?
                     Reach out directly - we reply within one business day.
                 </p>
@@ -175,7 +176,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     </span>
                     <span class="contact-text">
-                        <span class="contact-label">Phone</span>
+                        <span class="contact-label" data-i18n="contact.phone">Phone</span>
                         <span class="contact-value">01779-326236</span>
                     </span>
                 </a>
@@ -184,7 +185,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                     </span>
                     <span class="contact-text">
-                        <span class="contact-label">Email</span>
+                        <span class="contact-label" data-i18n="contact.email">Email</span>
                         <span class="contact-value">fazlerabbicse65@gmail.com</span>
                     </span>
                 </a>
@@ -193,19 +194,19 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     </span>
                     <span class="contact-text">
-                        <span class="contact-label">Support hours</span>
-                        <span class="contact-value">Sat - Thu, 9am - 8pm</span>
+                        <span class="contact-label" data-i18n="contact.hours">Support hours</span>
+                        <span class="contact-value" data-i18n="contact.hoursValue">Sat - Thu, 9am - 8pm</span>
                     </span>
                 </div>
             </div>
 
             <div class="text-center mt-8">
-                <h3 class="section-title" style="font-size: 1.5rem;">Ready to join the supply chain?</h3>
-                <p class="section-subtitle mx-auto">
+                <h3 class="section-title" style="font-size: 1.5rem;" data-i18n="contact.cta">Ready to join the supply chain?</h3>
+                <p class="section-subtitle mx-auto" data-i18n="contact.ctaSub">
                     Create a free account and start exploring listings or listing your harvest today.
                 </p>
                 <div class="flex justify-center gap-3">
-                    <button type="button" class="btn btn-primary btn-lg" data-auth-open>
+                    <button type="button" class="btn btn-primary btn-lg" data-auth-open data-i18n="contact.start">
                         Get Started
                     </button>
                 </div>
@@ -221,10 +222,10 @@
             <div class="flex items-center gap-2 font-bold text-current">
                 <span>🌾</span> AgroLink
             </div>
-            <p class="m-0 mt-2">A B2B agro-supply chain platform connecting farmers and buyers directly.</p>
+            <p class="m-0 mt-2" data-i18n="footer.tag">A B2B agro-supply chain platform connecting farmers and buyers directly.</p>
         </div>
         <div class="footer-dev">
-            <p class="m-0">Developed by <strong>Md Fazley Rabbi</strong></p>
+            <p class="m-0"><span data-i18n="footer.dev">Developed by</span> <strong>Md Fazley Rabbi</strong></p>
             <div class="footer-social">
                 <a class="social-link" href="https://www.linkedin.com/in/fazleyrabbi1067/" target="_blank" rel="noopener" aria-label="LinkedIn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>
@@ -242,7 +243,7 @@
         </div>
     </div>
     <div class="container footer-bottom">
-        <p class="m-0">© 2026 AgroLink. All rights reserved.</p>
+        <p class="m-0" data-i18n="footer.rights">© 2026 AgroLink. All rights reserved.</p>
     </div>
 </footer>
 
@@ -250,36 +251,36 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
         <button type="button" class="modal-close" data-auth-close aria-label="Close">×</button>
 
-        <h2 class="modal-title" id="authModalTitle">Welcome to AgroLink</h2>
+        <h2 class="modal-title" id="authModalTitle" data-i18n="auth.title">Welcome to AgroLink</h2>
 
         <div class="tabs" role="tablist" aria-label="Authentication">
-            <button type="button" class="tab active" data-auth-tab="login" role="tab" aria-selected="true">Login</button>
-            <button type="button" class="tab" data-auth-tab="register" role="tab" aria-selected="false">Sign Up</button>
+            <button type="button" class="tab active" data-auth-tab="login" role="tab" aria-selected="true" data-i18n="auth.login">Login</button>
+            <button type="button" class="tab" data-auth-tab="register" role="tab" aria-selected="false" data-i18n="auth.signup">Sign Up</button>
         </div>
 
         <div class="panel active" id="panel-login">
             <form id="loginForm" novalidate>
                 <div class="field">
-                    <label for="loginEmail">Email</label>
-                    <input id="loginEmail" class="input" type="email" name="email" placeholder="you@company.com" required autocomplete="email">
+                    <label for="loginEmail" data-i18n="auth.email">Email</label>
+                    <input id="loginEmail" class="input" type="email" name="email" placeholder="you@company.com" required autocomplete="email" data-i18n-ph="auth.emailPh">
                 </div>
                 <div class="field">
-                    <label for="loginPassword">Password</label>
+                    <label for="loginPassword" data-i18n="auth.password">Password</label>
                     <div class="password-input-wrap">
-                        <input id="loginPassword" class="input" type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        <input id="loginPassword" class="input" type="password" name="password" placeholder="••••••••" required autocomplete="current-password" data-i18n-ph="auth.loginPasswordPh">
                         <button type="button" class="password-toggle" data-toggle-password="loginPassword" aria-label="Show password" aria-pressed="false">
                             <svg class="pw-icon pw-show" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             <svg class="pw-icon pw-hide hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                         </button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
+                <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="auth.login">Login</button>
                 <p class="modal-footnote">
-                    <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-forgot>Forgot password?</button>
+                    <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-forgot data-i18n="auth.forgot">Forgot password?</button>
                 </p>
                 <p class="modal-footnote">
-                    New to AgroLink?
-                    <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-tab="register">Create an account</button>
+                    <span data-i18n="auth.newHere">New to AgroLink?</span>
+                    <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-tab="register" data-i18n="auth.createAccount">Create an account</button>
                 </p>
             </form>
         </div>
@@ -287,32 +288,32 @@
         <div class="panel" id="panel-register">
             <form id="registerForm" novalidate>
                 <div class="field">
-                    <label for="registerName">Full name</label>
-                    <input id="registerName" class="input" type="text" name="name" placeholder="Green Valley Farms" required autocomplete="name">
+                    <label for="registerName" data-i18n="auth.fullName">Full name</label>
+                    <input id="registerName" class="input" type="text" name="name" placeholder="Green Valley Farms" required autocomplete="name" data-i18n-ph="auth.fullNamePh">
                 </div>
                 <div class="field">
-                    <label for="registerEmail">Email</label>
-                    <input id="registerEmail" class="input" type="email" name="email" placeholder="you@company.com" required autocomplete="email">
+                    <label for="registerEmail" data-i18n="auth.email">Email</label>
+                    <input id="registerEmail" class="input" type="email" name="email" placeholder="you@company.com" required autocomplete="email" data-i18n-ph="auth.emailPh">
                 </div>
                 <div>
-                    <span class="field-label">I am a</span>
+                    <span class="field-label" data-i18n="auth.iAm">I am a</span>
                     <div class="role-options" data-role-group>
                         <label class="role-option active">
                             <input type="radio" name="registerRole" value="FARMER" checked>
-                            <span class="role-title">Farmer</span>
-                            <span class="role-desc">Sell your produce</span>
+                            <span class="role-title" data-i18n="auth.farmer">Farmer</span>
+                            <span class="role-desc" data-i18n="auth.farmerDesc">Sell your produce</span>
                         </label>
                         <label class="role-option">
                             <input type="radio" name="registerRole" value="BUYER">
-                            <span class="role-title">Buyer</span>
-                            <span class="role-desc">Source fresh stock</span>
+                            <span class="role-title" data-i18n="auth.buyer">Buyer</span>
+                            <span class="role-desc" data-i18n="auth.buyerDesc">Source fresh stock</span>
                         </label>
                     </div>
                 </div>
                 <div class="field">
-                    <label for="registerPassword">Password</label>
+                    <label for="registerPassword" data-i18n="auth.password">Password</label>
                     <div class="password-input-wrap">
-                        <input id="registerPassword" class="input" type="password" name="password" placeholder="Minimum 8 characters" required minlength="8" autocomplete="new-password">
+                        <input id="registerPassword" class="input" type="password" name="password" placeholder="Minimum 8 characters" required minlength="8" autocomplete="new-password" data-i18n-ph="auth.passwordPh">
                         <button type="button" class="password-toggle" data-toggle-password="registerPassword" aria-label="Show password" aria-pressed="false">
                             <svg class="pw-icon pw-show" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             <svg class="pw-icon pw-hide hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -321,18 +322,18 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="field">
-                        <label for="registerPhone">Phone (optional)</label>
+                        <label for="registerPhone" data-i18n="auth.phone">Phone (optional)</label>
                         <input id="registerPhone" class="input" type="tel" name="phone" placeholder="+880-1712-345678">
                     </div>
                     <div class="field">
-                        <label for="registerLocation">Location</label>
-                        <input id="registerLocation" class="input" type="text" name="location" placeholder="Dhaka, Bangladesh" required>
+                        <label for="registerLocation" data-i18n="auth.location">Location</label>
+                        <input id="registerLocation" class="input" type="text" name="location" placeholder="Dhaka, Bangladesh" required data-i18n-ph="auth.locationPh">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+                <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="auth.create">Create Account</button>
                 <p class="modal-footnote">
-                    Already registered?
-                    <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-tab="login">Login</button>
+                    <span data-i18n="auth.haveAccount">Already registered?</span>
+                    <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-tab="login" data-i18n="auth.login">Login</button>
                 </p>
             </form>
         </div>
@@ -341,38 +342,38 @@
             <div data-forgot-step="email">
                 <form id="forgotEmailForm" novalidate>
                     <div class="field">
-                        <label for="forgotEmail">Email</label>
-                        <input id="forgotEmail" class="input" type="email" name="email" placeholder="you@company.com" required autocomplete="email">
+                        <label for="forgotEmail" data-i18n="auth.email">Email</label>
+                        <input id="forgotEmail" class="input" type="email" name="email" placeholder="you@company.com" required autocomplete="email" data-i18n-ph="auth.emailPh">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">Send code</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="auth.sendCode">Send code</button>
                     <p class="modal-footnote">
-                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-back-login>Back to login</button>
+                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-back-login data-i18n="auth.backLogin">Back to login</button>
                     </p>
                 </form>
             </div>
             <div data-forgot-step="code" hidden>
                 <form id="forgotCodeForm" novalidate>
-                    <p class="modal-footnote">We sent a 6-digit code to <strong id="forgotEmailEcho"></strong>. It expires in 10 minutes.</p>
+                    <p class="modal-footnote"><span data-i18n="auth.codeSentTo">We sent a 6-digit code to</span> <strong id="forgotEmailEcho"></strong><span data-i18n="auth.codeExpiry">. It expires in 10 minutes.</span></p>
                     <div class="field">
-                        <label for="forgotCode">6-digit code</label>
+                        <label for="forgotCode" data-i18n="auth.codeLabel">6-digit code</label>
                         <input id="forgotCode" class="input" type="text" name="code" inputmode="numeric" placeholder="123456" required minlength="6" maxlength="6" autocomplete="one-time-code">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">Continue</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="auth.continue">Continue</button>
                     <p class="modal-footnote">
-                        Didn't get it?
-                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-resend>Resend code</button>
+                        <span data-i18n="auth.noCode">Didn't get it?</span>
+                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-resend data-i18n="auth.resend">Resend code</button>
                     </p>
                     <p class="modal-footnote">
-                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-back-login>Back to login</button>
+                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-back-login data-i18n="auth.backLogin">Back to login</button>
                     </p>
                 </form>
             </div>
             <div data-forgot-step="password" hidden>
                 <form id="forgotPasswordForm" novalidate>
                     <div class="field">
-                        <label for="forgotNewPassword">New password</label>
+                        <label for="forgotNewPassword" data-i18n="auth.newPassword">New password</label>
                         <div class="password-input-wrap">
-                            <input id="forgotNewPassword" class="input" type="password" name="newPassword" placeholder="Minimum 8 characters" required minlength="8" autocomplete="new-password">
+                            <input id="forgotNewPassword" class="input" type="password" name="newPassword" placeholder="Minimum 8 characters" required minlength="8" autocomplete="new-password" data-i18n-ph="auth.passwordPh">
                             <button type="button" class="password-toggle" data-toggle-password="forgotNewPassword" aria-label="Show password" aria-pressed="false">
                                 <svg class="pw-icon pw-show" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 <svg class="pw-icon pw-hide hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
@@ -380,18 +381,18 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label for="forgotConfirmPassword">Confirm new password</label>
+                        <label for="forgotConfirmPassword" data-i18n="auth.confirmPassword">Confirm new password</label>
                         <div class="password-input-wrap">
-                            <input id="forgotConfirmPassword" class="input" type="password" name="confirmPassword" placeholder="Repeat the new password" required minlength="8" autocomplete="new-password">
+                            <input id="forgotConfirmPassword" class="input" type="password" name="confirmPassword" placeholder="Repeat the new password" required minlength="8" autocomplete="new-password" data-i18n-ph="auth.confirmPasswordPh">
                             <button type="button" class="password-toggle" data-toggle-password="forgotConfirmPassword" aria-label="Show password" aria-pressed="false">
                                 <svg class="pw-icon pw-show" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 <svg class="pw-icon pw-hide hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg">Reset password</button>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" data-i18n="auth.reset">Reset password</button>
                     <p class="modal-footnote">
-                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-back-login>Back to login</button>
+                        <button type="button" class="btn btn-ghost btn-sm p-0 align-baseline" data-auth-back-login data-i18n="auth.backLogin">Back to login</button>
                     </p>
                 </form>
             </div>
@@ -400,6 +401,7 @@
 </div>
 
 <script th:src="@{/js/core/api.js}"></script>
+<script th:src="@{/js/core/i18n.js}"></script>
 <script th:src="@{/js/core/toast.js}"></script>
 <script th:src="@{/js/core/loader.js}"></script>
 <script th:src="@{/js/landing.js}"></script>

@@ -70,7 +70,7 @@
                 }
                 if (grid) {
                     grid.innerHTML =
-                        '<div class="empty-state">No produce available right now.<br>Please try again later.</div>';
+                        `<div class="empty-state">${window.t ? t("explore.none") : "No produce available right now.<br>Please try again later."}</div>`;
                 }
             }
         },
@@ -92,7 +92,7 @@
             const select = $("#categoryFilter");
             if (!select) return;
             const current = select.value;
-            select.innerHTML = '<option value="">All categories</option>'
+            select.innerHTML = `<option value="">${window.t ? t("explore.allCategories") : "All categories"}</option>`
                 + this.categories
                     .map((category) => `<option value="${escapeHtml(category.name)}">${escapeHtml(category.name)}</option>`)
                     .join("");
@@ -120,7 +120,7 @@
             if (!grid) return;
 
             if (!listings.length) {
-                grid.innerHTML = '<div class="empty-state">No produce listings match your filters.</div>';
+                grid.innerHTML = `<div class="empty-state">${window.t ? t("explore.empty") : "No produce listings match your filters."}</div>`;
                 this.setSeeMore(0);
                 return;
             }
@@ -142,7 +142,7 @@
             wrap.hidden = false;
             wrap.innerHTML = `
                 <button type="button" class="btn btn-secondary btn-lg" data-auth-open>
-                    See more (${hiddenCount} more) &mdash; Login to view all
+                    ${window.t ? t("explore.seeMore") : "See more"} (${hiddenCount} more) &mdash; ${window.t ? t("explore.loginToView") : "Login to view all"}
                 </button>`;
         },
 
@@ -170,11 +170,11 @@
                         <span class="text-muted"> / ${unit}</span>
                     </div>
                     <div class="crop-meta">
-                        <span class="chip">Qty ${quantity} ${unit}</span>
-                        <span class="chip">Harvest ${harvest}</span>
+                        <span class="chip">${window.t ? t("card.qty") : "Qty"} ${quantity} ${unit}</span>
+                        <span class="chip">${window.t ? t("card.harvest") : "Harvest"} ${harvest}</span>
                     </div>
                     <button type="button" class="btn btn-primary btn-sm crop-offer" data-auth-open>
-                        Make an Offer
+                        ${window.t ? t("card.offer") : "Make an Offer"}
                     </button>
                 </div>
             `;
@@ -240,7 +240,7 @@
                     const show = target.type === "password";
                     target.type = show ? "text" : "password";
                     button.setAttribute("aria-pressed", String(show));
-                    button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+                    button.setAttribute("aria-label", show ? t("auth.hidePassword") : t("auth.showPassword"));
                     const showIcon = button.querySelector(".pw-show");
                     const hideIcon = button.querySelector(".pw-hide");
                     if (showIcon) showIcon.classList.toggle("hidden", show);
@@ -315,7 +315,7 @@
                 email: $("#loginEmail").value.trim(),
                 password: $("#loginPassword").value,
             };
-            await this.submit(form, () => Api.post("/auth/login", payload), "Welcome back!", true);
+            await this.submit(form, () => Api.post("/auth/login", payload), t("auth.welcome"), true);
         },
 
         async handleRegister(event) {
@@ -335,7 +335,7 @@
                 location: $("#registerLocation").value.trim(),
             };
             const done = await this.submit(form, () => Api.post("/auth/register", payload),
-                "Account created! Please log in with your email and password.", false);
+                t("auth.created"), false);
             if (done) {
                 form.reset();
                 this.updateRoleSelection();
@@ -353,7 +353,7 @@
             this.resetEmail = $("#forgotEmail").value.trim();
             const done = await this.submit(form,
                 () => Api.post("/auth/password-reset/request", { email: this.resetEmail }),
-                "Code sent to your email", false);
+                t("auth.codeSent"), false);
             if (done) {
                 $("#forgotEmailEcho").textContent = this.resetEmail;
                 this.forgotStep("code");
@@ -365,10 +365,10 @@
             button.disabled = true;
             try {
                 const response = await Api.post("/auth/password-reset/request", { email: this.resetEmail });
-                if (response && response.success) Toast.success("A fresh code is on its way");
-                else Toast.error(response && response.message ? response.message : "Something went wrong");
+                if (response && response.success) Toast.success(t("auth.codeResent"));
+                else Toast.error(response && response.message ? response.message : t("auth.failed"));
             } catch (error) {
-                Toast.error(error && error.message ? error.message : "Something went wrong");
+                Toast.error(error && error.message ? error.message : t("auth.failed"));
             } finally {
                 button.disabled = false;
             }
@@ -383,7 +383,7 @@
             }
             const code = $("#forgotCode").value.trim();
             if (!/^\d{6}$/.test(code)) {
-                Toast.error("Code must be 6 digits");
+                Toast.error(t("auth.badCode"));
                 return;
             }
             this.resetCode = code;
@@ -399,7 +399,7 @@
             }
             const next = $("#forgotNewPassword").value;
             if (next !== $("#forgotConfirmPassword").value) {
-                Toast.error("Passwords do not match");
+                Toast.error(t("auth.mismatch"));
                 return;
             }
             const done = await this.submit(form,
@@ -408,7 +408,7 @@
                     code: this.resetCode,
                     newPassword: next,
                 }),
-                "Password reset successful. Please log in.", false);
+                t("auth.resetDone"), false);
             if (done) {
                 form.reset();
                 $("#forgotEmailForm").reset();
@@ -423,8 +423,8 @@
             const button = form.querySelector("button[type='submit']");
             const original = button.textContent;
             button.disabled = true;
-            button.textContent = "Please wait...";
-            Loader.show("Working...");
+            button.textContent = t("auth.wait");
+            Loader.show(t("auth.working"));
 
             try {
                 const response = await request();
@@ -444,9 +444,9 @@
                     }
                     return true;
                 }
-                Toast.error(response && response.message ? response.message : "Something went wrong");
+                Toast.error(response && response.message ? response.message : t("auth.failed"));
             } catch (error) {
-                Toast.error(error && error.message ? error.message : "Something went wrong");
+                Toast.error(error && error.message ? error.message : t("auth.failed"));
             } finally {
                 button.disabled = false;
                 button.textContent = original;
@@ -552,6 +552,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         if (window.Theme) ThemeControls.init();
+        if (window.I18n) I18n.init();
 
         NavSpy.init();
         HeroStats.init();

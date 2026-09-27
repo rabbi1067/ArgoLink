@@ -1,32 +1,32 @@
 <section class="page dashboard-page" data-dashboard-view="OPERATIONS">
     <div class="dashboard-header">
         <div>
-            <p class="section-eyebrow">Operations</p>
-            <h1 class="section-title">Marketplace administration</h1>
-            <p class="text-muted">Supply, demand and money movement across the whole platform.</p>
+            <p class="section-eyebrow" data-i18n="op.eyebrow">Operations</p>
+            <h1 class="section-title" data-i18n="op.title">Marketplace administration</h1>
+            <p class="text-muted" data-i18n="op.sub">Supply, demand and money movement across the whole platform.</p>
         </div>
         <div class="dashboard-header-actions">
             <span class="badge badge-info" id="operations-scope" hidden></span>
-            <button type="button" class="btn btn-secondary btn-sm" data-operations-csv>Export CSV</button>
-            <button type="button" class="btn btn-secondary btn-sm" data-operations-refresh>Refresh</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-operations-csv data-i18n="page.exportCsv">Export CSV</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-operations-refresh data-i18n="page.refresh">Refresh</button>
         </div>
     </div>
 
     <div class="dashboard-section" id="operations-weather"></div>
 
-    <section class="attention" id="operations-attention" hidden aria-label="Needs your attention"></section>
+    <section class="attention" id="operations-attention" hidden aria-label="Needs your attention" data-i18n-aria="page.attention"></section>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 dashboard-card-grid" id="operations-stats"></div>
 
     <div class="section-heading" id="operations-lead-heading" hidden>
-        <h2 class="section-title">Dispute queue</h2>
-        <p class="section-subtitle">Trades waiting for an admin decision, newest first.</p>
+        <h2 class="section-title" data-i18n="op.lead">Dispute queue</h2>
+        <p class="section-subtitle" data-i18n="op.leadSub">Trades waiting for an admin decision, newest first.</p>
     </div>
     <div class="grid grid-cols-1" id="operations-lead-table"></div>
 
     <div class="section-heading" id="operations-trends-heading" hidden>
-        <h2 class="section-title">Trade flow</h2>
-        <p class="section-subtitle">Gross value against money still held in escrow.</p>
+        <h2 class="section-title" data-i18n="op.trends">Trade flow</h2>
+        <p class="section-subtitle" data-i18n="op.trendsSub">Gross value against money still held in escrow.</p>
     </div>
     <div class="grid grid-cols-1" id="operations-charts"></div>
 
@@ -35,13 +35,13 @@
     </div>
 
     <div class="section-heading" id="operations-tables-heading" hidden>
-        <h2 class="section-title">Listing management</h2>
-        <p class="section-subtitle">Latest 5 shown, View more opens the full page.</p>
+        <h2 class="section-title" data-i18n="op.tables">Listing management</h2>
+        <p class="section-subtitle" data-i18n="page.latest5">Latest 5 shown, View more opens the full page.</p>
     </div>
     <div class="grid grid-cols-1" id="operations-tables"></div>
 
     <div class="section-heading">
-        <h2 class="section-title">Recent activity</h2>
+        <h2 class="section-title" data-i18n="page.recentActivity">Recent activity</h2>
         <p class="section-subtitle" id="operations-activity-count"></p>
     </div>
     <div class="card" id="operations-activity"></div>

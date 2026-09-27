@@ -39,6 +39,12 @@ window.Pages.produce = {
         this.bindToolbar();
         this.bindGrid();
         this.bindModals();
+        if (!this._langBound) {
+            this._langBound = true;
+            document.addEventListener("langchange", () => {
+                if (this.container && this.container.isConnected) this.load();
+            });
+        }
 
         const addButton = this.$("#produceAddBtn");
         if (addButton) addButton.hidden = !this.isFarmer();
@@ -153,8 +159,8 @@ window.Pages.produce = {
         wrap.innerHTML = `
             <div class="suggest-head">
                 <span aria-hidden="true">✨</span>
-                <strong>AI Suggest</strong>
-                <span class="text-muted">Picked from your orders and offers</span>
+                <strong>${window.t ? t("pd.suggestTitle") : "AI Suggest"}</strong>
+                <span class="text-muted">${window.t ? t("pd.suggestSub") : "Picked from your orders and offers"}</span>
             </div>
             <div class="suggest-row">
                 ${picks.map((pick) => this.suggestCard(pick)).join("")}
@@ -177,12 +183,12 @@ window.Pages.produce = {
                 <span class="suggest-badge ${badgeClass}">${this.esc(pick.badge || "")}</span>
                 ${image ? `<img class="suggest-img" src="${image}" alt="${this.esc(pick.cropName || "Suggested crop")}" loading="lazy">` : ""}
                 <div class="suggest-price">৳${price}<span class="text-muted"> / ${this.esc(pick.unit || "kg")}</span></div>
-                <p class="suggest-name">${this.esc(pick.cropName || "Unnamed produce")}</p>
+                <p class="suggest-name">${this.esc(pick.cropName || (window.t ? t("pd.unnamedProduce") : "Unnamed produce"))}</p>
                 <div class="suggest-meta">
-                    ${sold ? `<span class="suggest-chip">${sold} SOLD</span>` : ""}
-                    ${(pick.repurchaseRatePct || 0) > 0 ? `<span class="suggest-chip">${pick.repurchaseRatePct}% Repurchase</span>` : ""}
+                    ${sold ? `<span class="suggest-chip">${sold} ${window.t ? t("pd.sold") : "SOLD"}</span>` : ""}
+                    ${(pick.repurchaseRatePct || 0) > 0 ? `<span class="suggest-chip">${pick.repurchaseRatePct}% ${window.t ? t("pd.repurchase") : "Repurchase"}</span>` : ""}
                 </div>
-                <button type="button" class="btn btn-primary btn-sm btn-block" data-action="offer" data-id="${this.esc(pick.listingId)}">Make an Offer</button>
+                <button type="button" class="btn btn-primary btn-sm btn-block" data-action="offer" data-id="${this.esc(pick.listingId)}">${window.t ? t("pd.makeOffer") : "Make an Offer"}</button>
             </article>`;
     },
 
@@ -286,13 +292,13 @@ window.Pages.produce = {
         if (filter) {
             const current = filter.value;
             filter.innerHTML =
-                '<option value="">All categories</option>' +
+                `<option value="">${window.t ? t("pd.allCategories") : "All categories"}</option>` +
                 values.map((v) => `<option value="${this.esc(v)}">${this.esc(v)}</option>`).join("");
             filter.value = values.includes(current) ? current : "";
         }
         if (modalSelect) {
             modalSelect.innerHTML =
-                '<option value="">Select category</option>' +
+                `<option value="">${window.t ? t("pd.selectCategory") : "Select category"}</option>` +
                 values.map((v) => `<option value="${this.esc(v)}">${this.esc(v)}</option>`).join("");
         }
     },
@@ -306,7 +312,7 @@ window.Pages.produce = {
         const divisionFilter = this.$("#produceDivisionFilter");
         if (divisionFilter) {
             divisionFilter.innerHTML =
-                '<option value="">All divisions</option>' +
+                `<option value="">${window.t ? t("pd.allDivisions") : "All divisions"}</option>` +
                 this.divisionsPresent().map((d) => `<option value="${this.esc(d)}">${this.esc(d)}</option>`).join("");
         }
         this.populateDistrictFilter();
@@ -314,7 +320,7 @@ window.Pages.produce = {
         const modalDistrict = this.$("#produceDistrict");
         if (modalDistrict) {
             modalDistrict.innerHTML =
-                '<option value="">Select district</option>' +
+                `<option value="">${window.t ? t("pd.selectDistrict") : "Select district"}</option>` +
                 this.divisionsPresent()
                     .map((division) => {
                         const options = this.locations
@@ -333,7 +339,7 @@ window.Pages.produce = {
         const division = this.value("#produceDivisionFilter");
         const items = this.locations.filter((l) => !division || l.division === division);
         select.innerHTML =
-            '<option value="">All districts</option>' +
+            `<option value="">${window.t ? t("pd.allDistricts") : "All districts"}</option>` +
             items.map((l) => `<option value="${this.esc(l.name)}">${this.esc(l.name)}</option>`).join("");
     },
 
@@ -472,11 +478,13 @@ window.Pages.produce = {
         const items = data && data.items ? data.items : [];
         if (count) {
             const total = data ? data.totalItems : 0;
-            count.textContent = total === 1 ? "1 listing found" : `${this.number(total)} listings found`;
+            count.textContent = window.t && window.I18n && I18n.getLang() === "bn"
+                ? (total === 1 ? "১টি তালিকা পাওয়া গেছে" : `${this.number(total)}টি তালিকা পাওয়া গেছে`)
+                : (total === 1 ? "1 listing found" : `${this.number(total)} listings found`);
         }
         grid.innerHTML = items.length
             ? items.map((listing) => this.buyerCard(listing)).join("")
-            : '<div class="empty-state">No produce matches your filters. Try clearing some filters.</div>';
+            : `<div class="empty-state">${window.t ? t("explore.empty") : "No produce matches your filters. Try clearing some filters."}</div>`;
         this.renderPager();
     },
 
@@ -498,10 +506,16 @@ window.Pages.produce = {
             return true;
         });
 
-        if (count) count.textContent = `${filtered.length} of ${this.listings.length} listings`;
+        if (count) {
+            count.textContent = window.t && window.I18n && I18n.getLang() === "bn"
+                ? `মোট ${this.number(this.listings.length)}টির মধ্যে ${this.number(filtered.length)}টি`
+                : `${filtered.length} of ${this.listings.length} listings`;
+        }
         grid.innerHTML = filtered.length
             ? filtered.map((listing) => this.farmerCard(listing)).join("")
-            : (this.isAdmin() ? '<div class="empty-state">No listings match these filters.</div>' : '<div class="empty-state">No listings found. Use "+ Add Supply" to create one.</div>');
+            : (this.isAdmin()
+                ? `<div class="empty-state">${window.t ? t("pd.noMatch") : "No listings match these filters."}</div>`
+                : `<div class="empty-state">${window.t ? t("pd.noListings") : 'No listings found. Use "+ Add Supply" to create one.'}</div>`);
         this.renderPager();
     },
 
@@ -513,12 +527,13 @@ window.Pages.produce = {
             .filter((l) => l.status === "ACTIVE")
             .reduce((sum, l) => sum + Number(l.remainingQuantity || 0) * Number(l.pricePerUnit || 0), 0);
         box.hidden = false;
+        const chip = (en, bnKey) => (window.t ? t(bnKey) : en);
         box.innerHTML = `
-            <span class="pd-chip">Active: ${count("ACTIVE")}</span>
-            <span class="pd-chip">Draft: ${count("DRAFT")}</span>
-            <span class="pd-chip">Archived: ${count("ARCHIVED")}</span>
-            ${this.isAdmin() ? `<span class="pd-chip">Farmers: ${new Set(this.listings.map((l) => l.farmerId)).size}</span>` : ""}
-            <span class="pd-chip">Live stock value: ৳${this.money(stockValue)}</span>`;
+            <span class="pd-chip">${chip("Active", "pd.active")}: ${count("ACTIVE")}</span>
+            <span class="pd-chip">${chip("Draft", "pd.draft")}: ${count("DRAFT")}</span>
+            <span class="pd-chip">${chip("Archived", "pd.archived")}: ${count("ARCHIVED")}</span>
+            ${this.isAdmin() ? `<span class="pd-chip">${chip("Farmers", "pd.farmers")}: ${new Set(this.listings.map((l) => l.farmerId)).size}</span>` : ""}
+            <span class="pd-chip">${chip("Live stock value", "pd.liveStock")}: ৳${this.money(stockValue)}</span>`;
     },
 
     renderPager() {
@@ -531,10 +546,12 @@ window.Pages.produce = {
             return;
         }
         pager.hidden = false;
+        const prevLabel = window.t ? t("pd.prev") : "Previous";
+        const nextLabel = window.t ? t("pd.next") : "Next";
         pager.innerHTML = `
-            <button type="button" class="btn btn-secondary btn-sm" data-page-nav="prev" ${data.hasPrevious ? "" : "disabled"}>← Previous</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-page-nav="prev" ${data.hasPrevious ? "" : "disabled"}>← ${prevLabel}</button>
             <span class="text-muted">Page ${data.page + 1} of ${data.totalPages}</span>
-            <button type="button" class="btn btn-secondary btn-sm" data-page-nav="next" ${data.hasNext ? "" : "disabled"}>Next →</button>`;
+            <button type="button" class="btn btn-secondary btn-sm" data-page-nav="next" ${data.hasNext ? "" : "disabled"}>${nextLabel} →</button>`;
     },
 
     skeleton(count) {
@@ -581,23 +598,23 @@ window.Pages.produce = {
         return `
             <div class="card listing-card pd-card">
                 ${this.media(listing, "")}
-                <h3 class="card-title mb-1">${this.esc(listing.cropName || "Unnamed")}</h3>
+                <h3 class="card-title mb-1">${this.esc(listing.cropName || (window.t ? t("pd.unnamed") : "Unnamed"))}</h3>
                 <p class="text-muted pd-meta">${this.esc(listing.category || "")} · 📍 ${this.esc(this.placeText(listing))}</p>
                 ${listing.farmerName ? `<p class="text-muted pd-meta">👨‍🌾 ${this.esc(listing.farmerName)}</p>` : ""}
                 ${listing.description ? `<p class="text-muted pd-desc">${this.esc(listing.description)}</p>` : ""}
                 <div class="grid grid-cols-2 gap-3 mb-2">
                     <div>
                         <div class="stat-value">${this.number(this.stockOf(listing))}</div>
-                        <div class="stat-label">${this.esc(listing.unit || "kg")} in stock</div>
+                        <div class="stat-label">${this.esc(listing.unit || "kg")} ${window.t ? t("pf.inStock") : "in stock"}</div>
                     </div>
                     <div>
-                        <div class="stat-value" style="font-size: 1rem;">${this.esc(this.formatDate(listing.harvestDate) || "Flexible")}</div>
-                        <div class="stat-label">harvest</div>
+                        <div class="stat-value" style="font-size: 1rem;">${this.esc(this.formatDate(listing.harvestDate) || (window.t ? t("pd.flexible") : "Flexible"))}</div>
+                        <div class="stat-label">${window.t ? t("pd.harvest") : "harvest"}</div>
                     </div>
                 </div>
                 <div class="flex gap-2 mt-2">
-                    ${canOffer ? `<button type="button" class="btn btn-primary btn-block" data-action="offer" data-id="${this.esc(listing.id)}">Make an Offer</button>` : ""}
-                    ${canOffer ? `<button type="button" class="btn btn-secondary" data-action="message" data-id="${this.esc(listing.id)}" title="Message the farmer">💬</button>` : ""}
+                    ${canOffer ? `<button type="button" class="btn btn-primary btn-block" data-action="offer" data-id="${this.esc(listing.id)}">${window.t ? t("pd.makeOffer") : "Make an Offer"}</button>` : ""}
+                    ${canOffer ? `<button type="button" class="btn btn-secondary" data-action="message" data-id="${this.esc(listing.id)}" title="${window.t ? t("pd.messageFarmer") : "Message the farmer"}">💬</button>` : ""}
                 </div>
             </div>`;
     },
@@ -609,28 +626,28 @@ window.Pages.produce = {
         return `
             <div class="card listing-card pd-card">
                 ${this.media(listing, badge)}
-                <h3 class="card-title mb-1">${this.esc(listing.cropName || "Unnamed")}</h3>
+                <h3 class="card-title mb-1">${this.esc(listing.cropName || (window.t ? t("pd.unnamed") : "Unnamed"))}</h3>
                 <p class="text-muted pd-meta">${this.esc(listing.category || "")} · 📍 ${this.esc(this.placeText(listing))}</p>
-                ${this.isAdmin() ? `<p class="text-muted pd-meta">👨‍🌾 ${this.esc(listing.farmerName || "Unknown farmer")}</p>` : ""}
+                ${this.isAdmin() ? `<p class="text-muted pd-meta">👨‍🌾 ${this.esc(listing.farmerName || (window.t ? t("pd.unknownFarmer") : "Unknown farmer"))}</p>` : ""}
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div>
                         <div class="stat-value">${this.number(listing.availableQuantity)}</div>
-                        <div class="stat-label">${this.esc(listing.unit || "kg")} available</div>
+                        <div class="stat-label">${this.esc(listing.unit || "kg")} ${window.t ? t("pd.available") : "available"}</div>
                     </div>
                     <div>
                         <div class="stat-value">${this.number(listing.reservedQuantity)}</div>
-                        <div class="stat-label">reserved</div>
+                        <div class="stat-label">${window.t ? t("pd.reserved") : "reserved"}</div>
                     </div>
                 </div>
                 <form data-stock-form data-id="${id}" class="flex gap-2 mb-3">
-                    <input class="input input-sm" type="number" data-stock-input value="${this.esc(listing.availableQuantity)}" min="${this.esc(listing.reservedQuantity || 0)}" step="0.01" aria-label="Available quantity">
-                    <button type="submit" class="btn btn-secondary btn-sm">Update stock</button>
+                    <input class="input input-sm" type="number" data-stock-input value="${this.esc(listing.availableQuantity)}" min="${this.esc(listing.reservedQuantity || 0)}" step="0.01" aria-label="${window.t ? t("pf.qty") : "Available quantity"}">
+                    <button type="submit" class="btn btn-secondary btn-sm">${window.t ? t("pd.updateStock") : "Update stock"}</button>
                 </form>
                 <div class="flex flex-wrap gap-2">
-                    ${listing.status !== "ACTIVE" ? `<button type="button" class="btn btn-primary btn-sm" data-action="publish" data-id="${id}">Publish</button>` : ""}
-                    ${listing.status !== "ARCHIVED" ? `<button type="button" class="btn btn-secondary btn-sm" data-action="archive" data-id="${id}">Archive</button>` : ""}
-                    <button type="button" class="btn btn-secondary btn-sm" data-action="edit" data-id="${id}">Edit</button>
-                    <button type="button" class="btn btn-danger btn-sm" data-action="delete" data-id="${id}">Delete</button>
+                    ${listing.status !== "ACTIVE" ? `<button type="button" class="btn btn-primary btn-sm" data-action="publish" data-id="${id}">${window.t ? t("pd.publish") : "Publish"}</button>` : ""}
+                    ${listing.status !== "ARCHIVED" ? `<button type="button" class="btn btn-secondary btn-sm" data-action="archive" data-id="${id}">${window.t ? t("pd.archive") : "Archive"}</button>` : ""}
+                    <button type="button" class="btn btn-secondary btn-sm" data-action="edit" data-id="${id}">${window.t ? t("usr.edit") : "Edit"}</button>
+                    <button type="button" class="btn btn-danger btn-sm" data-action="delete" data-id="${id}">${window.t ? t("usr.delete") : "Delete"}</button>
                 </div>
             </div>`;
     },
@@ -645,15 +662,15 @@ window.Pages.produce = {
         const input = form.querySelector("[data-stock-input]");
         const quantity = Number(input ? input.value : NaN);
         if (Number.isNaN(quantity) || quantity < 0) {
-            if (window.Toast) Toast.error("Enter a valid quantity");
+            if (window.Toast) Toast.error(window.t ? t("pf.badQty") : "Enter a valid quantity");
             return;
         }
         try {
             await Api.patch(`/produce/${form.dataset.id}/stock`, { newAvailableQuantity: quantity });
-            if (window.Toast) Toast.success("Stock updated");
+            if (window.Toast) Toast.success(window.t ? t("pf.stockUpdated") : "Stock updated");
             this.loadOwn();
         } catch (error) {
-            if (window.Toast) Toast.fromResponse(error, "Could not update stock");
+            if (window.Toast) Toast.fromResponse(error, window.t ? t("pd.stockFail") : "Could not update stock");
         }
     },
 
@@ -668,10 +685,12 @@ window.Pages.produce = {
     },
 
     async deleteListing(id) {
-        if (!window.confirm(this.isAdmin() ? "Delete this listing permanently? The farmer will lose it. This cannot be undone." : "Delete this listing? This cannot be undone.")) return;
+        if (!window.confirm(this.isAdmin()
+            ? (window.t ? t("pf.deleteAdmin") : "Delete this listing permanently? The farmer will lose it. This cannot be undone.")
+            : (window.t ? t("pf.deleteMine") : "Delete this listing? This cannot be undone."))) return;
         try {
             await Api.del(`/produce/${id}`);
-            if (window.Toast) Toast.success("Listing deleted");
+            if (window.Toast) Toast.success(window.t ? t("pf.deleted") : "Listing deleted");
             this.loadOwn();
         } catch (error) {
             if (window.Toast) Toast.fromResponse(error, "Could not delete listing");
@@ -684,8 +703,8 @@ window.Pages.produce = {
         const form = this.$("#produceForm");
         if (form) form.reset();
         this.setValue("#produceId", "");
-        this.setText("#produceModalTitle", "Add Supply");
-        this.setText("#produceSubmitBtn", "Add Listing");
+        this.setText("#produceModalTitle", window.t ? t("pf.addSupply") : "Add Supply");
+        this.setText("#produceSubmitBtn", window.t ? t("pf.submit") : "Add Listing");
         this.populateCategoryOptions();
         this.showImage("");
         this.openModal(this.$("#produceModal"));
@@ -700,8 +719,8 @@ window.Pages.produce = {
         this.populateCategoryOptions();
 
         this.setValue("#produceId", listing.id);
-        this.setText("#produceModalTitle", "Edit Supply");
-        this.setText("#produceSubmitBtn", "Save Changes");
+        this.setText("#produceModalTitle", window.t ? t("pf.editSupply") : "Edit Supply");
+        this.setText("#produceSubmitBtn", window.t ? t("pf.save") : "Save Changes");
         this.setValue("#produceCropName", listing.cropName);
         this.setValue("#produceCategory", listing.category);
         this.setValue("#produceDescription", listing.description || "");
@@ -721,7 +740,7 @@ window.Pages.produce = {
         event.preventDefault();
 
         if (this.uploading) {
-            if (window.Toast) Toast.error("Please wait for the photo to finish uploading");
+            if (window.Toast) Toast.error(window.t ? t("pf.waitPhoto") : "Please wait for the photo to finish uploading");
             return;
         }
 
@@ -731,15 +750,15 @@ window.Pages.produce = {
         const cropName = this.value("#produceCropName").trim();
 
         if (!cropName || !this.value("#produceCategory")) {
-            if (window.Toast) Toast.error("Crop name and category are required");
+            if (window.Toast) Toast.error(window.t ? t("pf.cropCatRequired") : "Crop name and category are required");
             return;
         }
         if (!this.value("#produceDistrict")) {
-            if (window.Toast) Toast.error("Please select a district");
+            if (window.Toast) Toast.error(window.t ? t("pf.districtRequired") : "Please select a district");
             return;
         }
         if (!(quantity > 0) || !(price > 0)) {
-            if (window.Toast) Toast.error("Quantity and price must be greater than zero");
+            if (window.Toast) Toast.error(window.t ? t("pf.qtyPrice") : "Quantity and price must be greater than zero");
             return;
         }
 
@@ -769,10 +788,10 @@ window.Pages.produce = {
         try {
             if (id) {
                 await Api.put(`/produce/${id}`, body);
-                if (window.Toast) Toast.success("Listing updated");
+                if (window.Toast) Toast.success(window.t ? t("pf.updated") : "Listing updated");
             } else {
                 await Api.post("/produce", body);
-                if (window.Toast) Toast.success("Listing created (saved as draft — publish it to go live)");
+                if (window.Toast) Toast.success(window.t ? t("pf.created") : "Listing created (saved as draft — publish it to go live)");
             }
             this.closeModal(this.$("#produceModal"));
             this.loadOwn();
@@ -794,12 +813,12 @@ window.Pages.produce = {
         if (!file) return;
 
         if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
-            if (window.Toast) Toast.error("Choose a JPEG, PNG or WebP image");
+            if (window.Toast) Toast.error(window.t ? t("pf.badImage") : "Choose a JPEG, PNG or WebP image");
             input.value = "";
             return;
         }
         if (file.size > 15 * 1024 * 1024) {
-            if (window.Toast) Toast.error("That photo is too large (max 15 MB)");
+            if (window.Toast) Toast.error(window.t ? t("pf.bigImage") : "That photo is too large (max 15 MB)");
             input.value = "";
             return;
         }
@@ -912,7 +931,7 @@ window.Pages.produce = {
         this.setValue("#offerPrice", listing.pricePerUnit);
         this.setText(
             "#offerModalListing",
-            `${listing.cropName || "Crop"} · ৳${this.money(listing.pricePerUnit)}/${listing.unit || "kg"} · ${this.number(this.stockOf(listing))} ${listing.unit || ""} in stock`
+            `${listing.cropName || (window.t ? t("pd.cropFallback") : "Crop")} · ৳${this.money(listing.pricePerUnit)}/${listing.unit || "kg"} · ${this.number(this.stockOf(listing))} ${listing.unit || ""} ${window.t ? t("pf.inStock") : "in stock"}`
         );
         this.updateOfferTotal();
         this.openModal(this.$("#offerModal"));
@@ -937,12 +956,14 @@ window.Pages.produce = {
         };
 
         if (!(body.offeredQuantity > 0) || !(body.offeredPrice > 0)) {
-            if (window.Toast) Toast.error("Enter valid quantity and price");
+            if (window.Toast) Toast.error(window.t ? t("pf.offerQtyPrice") : "Enter valid quantity and price");
             return;
         }
         const listing = this.offerListing;
         if (listing && body.offeredQuantity > Number(this.stockOf(listing))) {
-            if (window.Toast) Toast.error(`Only ${this.number(this.stockOf(listing))} ${listing.unit || ""} in stock`);
+            if (window.Toast) Toast.error(window.t && window.I18n && I18n.getLang() === "bn"
+                ? `শুধু ${this.number(this.stockOf(listing))} ${listing.unit || ""} মজুদ আছে`
+                : `Only ${this.number(this.stockOf(listing))} ${listing.unit || ""} in stock`);
             return;
         }
 
@@ -950,7 +971,7 @@ window.Pages.produce = {
         if (submit) submit.disabled = true;
         try {
             await Api.post("/offers", body);
-            if (window.Toast) Toast.success("Offer submitted");
+            if (window.Toast) Toast.success(window.t ? t("pf.offerSent") : "Offer submitted");
             this.closeModal(this.$("#offerModal"));
         } catch (error) {
             if (window.Toast) Toast.fromResponse(error, "Could not submit offer");
@@ -997,6 +1018,10 @@ window.Pages.produce = {
         if (!iso) return "";
         const [year, month, day] = String(iso).slice(0, 10).split("-").map(Number);
         if (!year || !month || !day) return String(iso);
+        if (window.I18n && I18n.getLang() === "bn") {
+            const bnMonths = ["জানু", "ফেব্রু", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টে", "অক্টো", "নভে", "ডিসে"];
+            return `${day} ${bnMonths[month - 1]} ${year}`;
+        }
         return `${day} ${this.MONTHS[month - 1]} ${year}`;
     },
 

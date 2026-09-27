@@ -37,46 +37,46 @@
 <section class="page" data-page="produce">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Marketplace</p>
-            <h1 class="section-title mb-0">Produce Supply</h1>
+            <p class="section-eyebrow" data-i18n="pd.eyebrow">Marketplace</p>
+            <h1 class="section-title mb-0" data-i18n="pd.title">Produce Supply</h1>
             <p class="text-muted mb-0" id="produceContext"></p>
         </div>
         <div class="flex gap-2">
-            <button type="button" class="btn btn-primary btn-sm" id="produceAddBtn" hidden>+ Add Supply</button>
-            <button type="button" class="btn btn-secondary btn-sm" data-produce-refresh>Refresh</button>
+            <button type="button" class="btn btn-primary btn-sm" id="produceAddBtn" hidden data-i18n="pd.add">+ Add Supply</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-produce-refresh data-i18n="page.refresh">Refresh</button>
         </div>
     </div>
 
     <div id="produceSummary" class="pd-summary" hidden></div>
 
     <div class="pd-filters" role="search">
-        <input id="produceSearch" class="input pd-search" type="search" placeholder="Search crop, place or category..." aria-label="Search produce">
-        <select id="produceCategoryFilter" class="select" aria-label="Filter category">
-            <option value="">All categories</option>
+        <input id="produceSearch" class="input pd-search" type="search" placeholder="Search crop, place or category..." aria-label="Search produce" data-i18n-ph="pd.searchPh" data-i18n-aria="pd.searchLabel">
+        <select id="produceCategoryFilter" class="select" aria-label="Filter category" data-i18n-aria="pd.categoryLabel">
+            <option value="" data-i18n="pd.allCategories">All categories</option>
         </select>
-        <select id="produceStatusFilter" class="select" data-admin-filter hidden aria-label="Filter status">
-            <option value="">All statuses</option>
-            <option value="ACTIVE">Active</option>
-            <option value="DRAFT">Draft</option>
-            <option value="RESERVED">Reserved</option>
-            <option value="SOLD">Sold</option>
-            <option value="ARCHIVED">Archived</option>
+        <select id="produceStatusFilter" class="select" data-admin-filter hidden aria-label="Filter status" data-i18n-aria="pd.statusLabel">
+            <option value="" data-i18n="pd.allStatuses">All statuses</option>
+            <option value="ACTIVE" data-i18n="pd.active">Active</option>
+            <option value="DRAFT" data-i18n="pd.draft">Draft</option>
+            <option value="RESERVED" data-i18n="pd.reserved">Reserved</option>
+            <option value="SOLD" data-i18n="pd.sold">Sold</option>
+            <option value="ARCHIVED" data-i18n="pd.archived">Archived</option>
         </select>
-        <select id="produceDivisionFilter" class="select" data-buyer-filter aria-label="Filter division">
-            <option value="">All divisions</option>
+        <select id="produceDivisionFilter" class="select" data-buyer-filter aria-label="Filter division" data-i18n-aria="pd.divisionLabel">
+            <option value="" data-i18n="pd.allDivisions">All divisions</option>
         </select>
-        <select id="produceDistrictFilter" class="select" data-buyer-filter aria-label="Filter district">
-            <option value="">All districts</option>
+        <select id="produceDistrictFilter" class="select" data-buyer-filter aria-label="Filter district" data-i18n-aria="pd.districtLabel">
+            <option value="" data-i18n="pd.allDistricts">All districts</option>
         </select>
-        <input id="producePriceMin" class="input" type="number" min="0" step="0.01" placeholder="Min price ৳" data-buyer-filter aria-label="Minimum price">
-        <input id="producePriceMax" class="input" type="number" min="0" step="0.01" placeholder="Max price ৳" data-buyer-filter aria-label="Maximum price">
-        <select id="produceSort" class="select" data-buyer-filter aria-label="Sort by">
-            <option value="newest">Newest first</option>
-            <option value="price_asc">Price: low to high</option>
-            <option value="price_desc">Price: high to low</option>
-            <option value="quantity_desc">Most stock</option>
+        <input id="producePriceMin" class="input" type="number" min="0" step="0.01" placeholder="Min price ৳" data-buyer-filter data-i18n-ph="pd.minPrice" data-i18n-aria="pd.minPriceLabel" aria-label="Minimum price">
+        <input id="producePriceMax" class="input" type="number" min="0" step="0.01" placeholder="Max price ৳" data-buyer-filter data-i18n-ph="pd.maxPrice" data-i18n-aria="pd.maxPriceLabel" aria-label="Maximum price">
+        <select id="produceSort" class="select" data-buyer-filter aria-label="Sort by" data-i18n-aria="pd.sortLabel">
+            <option value="newest" data-i18n="pd.newest">Newest first</option>
+            <option value="price_asc" data-i18n="pd.priceAsc">Price: low to high</option>
+            <option value="price_desc" data-i18n="pd.priceDesc">Price: high to low</option>
+            <option value="quantity_desc" data-i18n="pd.mostStock">Most stock</option>
         </select>
-        <button type="button" class="btn btn-secondary btn-sm" id="produceClearFilters">Clear filters</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="produceClearFilters" data-i18n="pd.clear">Clear filters</button>
     </div>
     <p class="text-muted mb-4" id="produceCount" aria-live="polite"></p>
 
@@ -91,44 +91,44 @@
 
 <div class="modal-backdrop" id="produceModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="produceModalTitle" style="max-height: 92vh; overflow-y: auto;">
-        <button type="button" class="modal-close" data-produce-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="produceModalTitle">Add Supply</h2>
+        <button type="button" class="modal-close" data-produce-modal-close aria-label="Close" data-i18n-aria="common.close">×</button>
+        <h2 class="modal-title" id="produceModalTitle" data-i18n="pf.addSupply">Add Supply</h2>
         <form id="produceForm" novalidate>
             <input type="hidden" id="produceId">
 
             <div class="field pd-upload">
-                <label for="produceImage">Crop photo (JPEG, PNG or WebP)</label>
+                <label for="produceImage" data-i18n="pf.photo">Crop photo (JPEG, PNG or WebP)</label>
                 <input id="produceImage" class="input" type="file" accept="image/jpeg,image/png,image/webp">
                 <div class="pd-upload-preview" id="produceImagePreviewBox">
-                    <img id="produceImagePreview" alt="Selected crop photo preview">
+                    <img id="produceImagePreview" alt="Selected crop photo preview" data-i18n-alt="pf.photoAlt">
                 </div>
                 <div class="flex items-center justify-between gap-2">
                     <span class="pd-upload-status text-muted" id="produceImageStatus" aria-live="polite"></span>
-                    <button type="button" class="btn btn-secondary btn-sm" id="produceImageRemove" hidden>Remove photo</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="produceImageRemove" hidden data-i18n="pf.removePhoto">Remove photo</button>
                 </div>
             </div>
 
             <div class="field">
-                <label for="produceCropName">Crop name</label>
-                <input id="produceCropName" class="input" type="text" name="cropName" maxlength="100" placeholder="e.g. Naogaon Aman Rice" required>
+                <label for="produceCropName" data-i18n="pf.cropName">Crop name</label>
+                <input id="produceCropName" class="input" type="text" name="cropName" maxlength="100" placeholder="e.g. Naogaon Aman Rice" required data-i18n-ph="pf.cropNamePh">
             </div>
             <div class="field">
-                <label for="produceCategory">Category</label>
+                <label for="produceCategory" data-i18n="pf.category">Category</label>
                 <select id="produceCategory" class="select" name="category" required>
                     <option value="">Select category</option>
                 </select>
             </div>
             <div class="field">
-                <label for="produceDescription">Description (optional)</label>
-                <textarea id="produceDescription" class="input" name="description" maxlength="1000" placeholder="Variety, quality, packaging..."></textarea>
+                <label for="produceDescription" data-i18n="pf.desc">Description (optional)</label>
+                <textarea id="produceDescription" class="input" name="description" maxlength="1000" placeholder="Variety, quality, packaging..." data-i18n-ph="pf.descPh"></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="field">
-                    <label for="produceQuantity">Available quantity</label>
+                    <label for="produceQuantity" data-i18n="pf.qty">Available quantity</label>
                     <input id="produceQuantity" class="input" type="number" name="availableQuantity" min="0.01" step="0.01" required>
                 </div>
                 <div class="field">
-                    <label for="produceUnit">Unit</label>
+                    <label for="produceUnit" data-i18n="pf.unit">Unit</label>
                     <select id="produceUnit" class="select" name="unit" required>
                         <option value="kg">kg</option>
                         <option value="maund">maund (মণ)</option>
@@ -142,45 +142,45 @@
                 </div>
             </div>
             <div class="field">
-                <label for="producePrice">Price per unit (৳)</label>
+                <label for="producePrice" data-i18n="pf.price">Price per unit (৳)</label>
                 <input id="producePrice" class="input" type="number" name="pricePerUnit" min="0.01" step="0.01" required>
             </div>
             <div class="field">
-                <label for="produceDistrict">District</label>
+                <label for="produceDistrict" data-i18n="pf.district">District</label>
                 <select id="produceDistrict" class="select" name="district" required>
                     <option value="">Select district</option>
                 </select>
             </div>
             <div class="field">
-                <label for="produceLocation">Area / upazila / village (optional)</label>
-                <input id="produceLocation" class="input" type="text" name="location" maxlength="120" placeholder="e.g. Manda, Naogaon">
+                <label for="produceLocation" data-i18n="pf.location">Area / upazila / village (optional)</label>
+                <input id="produceLocation" class="input" type="text" name="location" maxlength="120" placeholder="e.g. Manda, Naogaon" data-i18n-ph="pf.locationPh">
             </div>
             <div class="field">
-                <label for="produceHarvestDate">Harvest date</label>
+                <label for="produceHarvestDate" data-i18n="pf.harvest">Harvest date</label>
                 <input id="produceHarvestDate" class="input" type="date" name="harvestDate">
             </div>
-            <button type="submit" class="btn btn-primary btn-block" id="produceSubmitBtn">Add Listing</button>
+            <button type="submit" class="btn btn-primary btn-block" id="produceSubmitBtn" data-i18n="pf.submit">Add Listing</button>
         </form>
     </div>
 </div>
 
 <div class="modal-backdrop" id="offerModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="offerModalTitle">
-        <button type="button" class="modal-close" data-offer-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="offerModalTitle">Make an Offer</h2>
+        <button type="button" class="modal-close" data-offer-modal-close aria-label="Close" data-i18n-aria="common.close">×</button>
+        <h2 class="modal-title" id="offerModalTitle" data-i18n="pf.offerTitle">Make an Offer</h2>
         <p class="text-muted mb-4" id="offerModalListing"></p>
         <form id="offerForm" novalidate>
             <input type="hidden" id="offerListingId">
             <div class="field">
-                <label for="offerQuantity">Offered quantity</label>
+                <label for="offerQuantity" data-i18n="pf.offerQty">Offered quantity</label>
                 <input id="offerQuantity" class="input" type="number" name="offeredQuantity" min="0.01" step="0.01" required>
             </div>
             <div class="field">
-                <label for="offerPrice">Offered price per unit (৳)</label>
+                <label for="offerPrice" data-i18n="pf.offerPrice">Offered price per unit (৳)</label>
                 <input id="offerPrice" class="input" type="number" name="offeredPrice" min="0.01" step="0.01" required>
             </div>
-            <p class="mb-4">Estimated total: <span class="pd-offer-total" id="offerTotal">৳0.00</span></p>
-            <button type="submit" class="btn btn-primary btn-block" id="offerSubmitBtn">Submit Offer</button>
+            <p class="mb-4"><span data-i18n="pf.estTotal">Estimated total:</span> <span class="pd-offer-total" id="offerTotal">৳0.00</span></p>
+            <button type="submit" class="btn btn-primary btn-block" id="offerSubmitBtn" data-i18n="pf.submitOffer">Submit Offer</button>
         </form>
     </div>
 </div>

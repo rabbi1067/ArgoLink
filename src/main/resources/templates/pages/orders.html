@@ -39,13 +39,13 @@
 <section class="page">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Fulfilment</p>
-            <h1 class="section-title mb-0">Purchase Orders</h1>
+            <p class="section-eyebrow" data-i18n="od.eyebrow">Fulfilment</p>
+            <h1 class="section-title mb-0" data-i18n="od.title">Purchase Orders</h1>
             <p class="text-muted mb-0" id="ordersContext"></p>
         </div>
         <div class="flex flex-wrap gap-2">
-            <select id="orderStatusFilter" class="select" style="max-width: 220px;" aria-label="Filter by status">
-                <option value="">All commitments</option>
+            <select id="orderStatusFilter" class="select" style="max-width: 220px;" aria-label="Filter by status" data-i18n-aria="od.statusLabel">
+                <option value="" data-i18n="od.allCommitments">All commitments</option>
                 <option value="PENDING">Pending</option>
                 <option value="OFFER_ACCEPTED">Offer accepted</option>
                 <option value="PAYMENT_PENDING">Payment pending</option>
@@ -56,15 +56,15 @@
                 <option value="CANCELLED">Cancelled</option>
                 <option value="DISPUTED">Disputed</option>
             </select>
-            <button type="button" class="btn btn-secondary btn-sm" data-orders-refresh>Refresh</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-orders-refresh data-i18n="page.refresh">Refresh</button>
         </div>
     </div>
 
     <div class="card mb-6">
         <div class="card-header">
             <div>
-                <h2 class="card-title mb-0">Order Commitments</h2>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">
+                <h2 class="card-title mb-0" data-i18n="od.commitments">Order Commitments</h2>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;" data-i18n="od.commitmentsSub">
                     Every order you are bound to, from accepted offer through escrow to delivery.
                 </p>
             </div>
@@ -74,13 +74,13 @@
         <div id="orderStatsStrip" class="grid mb-6" hidden></div>
 
         <div id="ordersTableWrap">
-            <div class="empty-state">Loading orders...</div>
+            <div class="empty-state" data-i18n="od.loadingOrders">Loading orders...</div>
         </div>
         <div class="od-pager mt-4">
             <span class="text-muted" id="ordersPageInfo"></span>
             <div class="flex gap-2">
-                <button type="button" class="btn btn-sm btn-secondary" id="ordersPrevPage" disabled>‹ Prev</button>
-                <button type="button" class="btn btn-sm btn-secondary" id="ordersNextPage" disabled>Next ›</button>
+                <button type="button" class="btn btn-sm btn-secondary" id="ordersPrevPage" disabled><span aria-hidden="true">&larr;</span> <span data-i18n="pd.prev">Prev</span></button>
+                <button type="button" class="btn btn-sm btn-secondary" id="ordersNextPage" disabled><span data-i18n="pd.next">Next</span> <span aria-hidden="true">&rarr;</span></button>
             </div>
         </div>
     </div>
@@ -88,21 +88,21 @@
     <div class="card">
         <div class="card-header">
             <div>
-                <h2 class="card-title mb-0">Offer Negotiations</h2>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">
-                    Six negotiations per page — accept, counter or reject before stock runs out.
+                <h2 class="card-title mb-0" data-i18n="od.negotiations">Offer Negotiations</h2>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;" data-i18n="od.negotiationsSub">
+                    Six negotiations per page - accept, counter or reject before stock runs out.
                 </p>
             </div>
             <span class="badge badge-info" id="offersCount">0</span>
         </div>
         <div id="offerList">
-            <div class="empty-state">Loading offers...</div>
+            <div class="empty-state" data-i18n="od.loadingOffers">Loading offers...</div>
         </div>
         <div class="od-pager mt-4">
             <span class="text-muted" id="offersPageInfo"></span>
             <div class="flex gap-2">
-                <button type="button" class="btn btn-sm btn-secondary" id="offersPrevPage" disabled>‹ Prev</button>
-                <button type="button" class="btn btn-sm btn-secondary" id="offersNextPage" disabled>Next ›</button>
+                <button type="button" class="btn btn-sm btn-secondary" id="offersPrevPage" disabled><span aria-hidden="true">&larr;</span> <span data-i18n="pd.prev">Prev</span></button>
+                <button type="button" class="btn btn-sm btn-secondary" id="offersNextPage" disabled><span data-i18n="pd.next">Next</span> <span aria-hidden="true">&rarr;</span></button>
             </div>
         </div>
     </div>
@@ -110,55 +110,55 @@
 
 <div class="modal-backdrop" id="acceptModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="acceptModalTitle">
-        <button type="button" class="modal-close" data-accept-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="acceptModalTitle">Accept Offer &amp; Place Order</h2>
+        <button type="button" class="modal-close" data-accept-modal-close aria-label="Close" data-i18n-aria="common.close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="acceptModalTitle" data-i18n="od.acceptTitle">Accept Offer &amp; Place Order</h2>
         <p class="text-muted mb-4" id="acceptModalSummary"></p>
         <form id="acceptForm" novalidate>
             <input type="hidden" id="acceptOfferId">
             <div class="field">
-                <label>Delivery address (from buyer)</label>
+                <label data-i18n="od.deliveryFrom">Delivery address (from buyer)</label>
                 <p id="acceptDeliveryAddress" class="text-muted"></p>
             </div>
-            <p class="text-muted" style="font-size: 0.8rem;">The buyer confirms the final shipping address and pays when the order is created.</p>
-            <button type="submit" class="btn btn-primary btn-block">Confirm Order</button>
+            <p class="text-muted" style="font-size: 0.8rem;" data-i18n="od.acceptNote">The buyer confirms the final shipping address and pays when the order is created.</p>
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="od.confirmOrder">Confirm Order</button>
         </form>
     </div>
 </div>
 
 <div class="modal-backdrop" id="counterModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="counterModalTitle">
-        <button type="button" class="modal-close" data-counter-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="counterModalTitle">Counter Offer</h2>
+        <button type="button" class="modal-close" data-counter-modal-close aria-label="Close" data-i18n-aria="common.close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="counterModalTitle" data-i18n="od.counterTitle">Counter Offer</h2>
         <p class="text-muted mb-4" id="counterModalListing"></p>
         <form id="counterForm" novalidate>
             <input type="hidden" id="counterOfferId">
             <div class="field">
-                <label for="counterQuantity">Offered quantity</label>
+                <label for="counterQuantity" data-i18n="pf.offerQty">Offered quantity</label>
                 <input id="counterQuantity" class="input" type="number" name="offeredQuantity" min="0.01" step="0.01" required>
             </div>
             <div class="field">
-                <label for="counterPrice">Offered price per unit (৳)</label>
+                <label for="counterPrice" data-i18n="pf.offerPrice">Offered price per unit (৳)</label>
                 <input id="counterPrice" class="input" type="number" name="offeredPrice" min="0.01" step="0.01" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Send Counter Offer</button>
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="od.sendCounter">Send Counter Offer</button>
         </form>
     </div>
 </div>
 
 <div class="modal-backdrop" id="paymentModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
-        <button type="button" class="modal-close" data-payment-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="paymentModalTitle">Confirm Payment</h2>
+        <button type="button" class="modal-close" data-payment-modal-close aria-label="Close" data-i18n-aria="common.close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="paymentModalTitle" data-i18n="od.payTitle">Confirm Payment</h2>
         <p class="text-muted mb-4" id="paymentModalSummary"></p>
         <form id="paymentForm" novalidate>
             <input type="hidden" id="paymentOrderId">
             <input type="hidden" id="paymentTotal">
             <div class="field">
-                <label for="paymentAddress">Shipping address</label>
-                <input id="paymentAddress" class="input" type="text" placeholder="House, road, district" required>
+                <label for="paymentAddress" data-i18n="od.shipAddress">Shipping address</label>
+                <input id="paymentAddress" class="input" type="text" placeholder="House, road, district" required data-i18n-ph="od.shipAddressPh">
             </div>
             <div class="field">
-                <span class="field-label">Payment method</span>
+                <span class="field-label" data-i18n="od.payMethod">Payment method</span>
                 <div class="od-method-grid">
                     <label class="od-method-option">
                         <input type="radio" name="paymentMethodChoice" value="BKASH" id="paymentMethodBkash" checked>
@@ -197,28 +197,28 @@
                 </div>
             </div>
             <p class="text-muted" id="paymentRailNote" style="font-size: 0.8rem;"></p>
-            <p class="text-muted" style="font-size: 0.8rem;">The amount is held in escrow and released to the farmer on delivery.</p>
-            <button type="submit" class="btn btn-primary btn-block">Pay &amp; Confirm</button>
+            <p class="text-muted" style="font-size: 0.8rem;" data-i18n="od.escrowNote">The amount is held in escrow and released to the farmer on delivery.</p>
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="od.payNow">Pay &amp; Confirm</button>
         </form>
     </div>
 </div>
 
 <div class="modal-backdrop" id="trackingModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="trackingModalTitle">
-        <button type="button" class="modal-close" data-tracking-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="trackingModalTitle">Update Live Position</h2>
+        <button type="button" class="modal-close" data-tracking-modal-close aria-label="Close" data-i18n-aria="common.close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="trackingModalTitle" data-i18n="od.trackTitle">Update Live Position</h2>
         <p class="text-muted mb-4" id="trackingModalSummary"></p>
         <form id="trackingForm" novalidate>
             <input type="hidden" id="trackingOrderId">
             <div class="field">
-                <label for="trackingLatitude">Latitude</label>
+                <label for="trackingLatitude" data-i18n="od.latitude">Latitude</label>
                 <input id="trackingLatitude" class="input" type="number" step="0.000001" min="-90" max="90" placeholder="23.810300" required>
             </div>
             <div class="field">
-                <label for="trackingLongitude">Longitude</label>
+                <label for="trackingLongitude" data-i18n="od.longitude">Longitude</label>
                 <input id="trackingLongitude" class="input" type="number" step="0.000001" min="-180" max="180" placeholder="90.412500" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Save Position</button>
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="od.savePos">Save Position</button>
         </form>
     </div>
 </div>

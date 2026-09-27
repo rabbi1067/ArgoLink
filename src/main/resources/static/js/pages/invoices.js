@@ -33,8 +33,8 @@ window.Pages.invoices = {
         const context = this.container.querySelector("#invoiceContext");
         if (context) {
             context.textContent = admin
-                ? "Every invoice on the platform, newest first"
-                : "Invoices for your orders, newest first";
+                ? (window.t ? t("inv.contextAll") : "Every invoice on the platform, newest first")
+                : (window.t ? t("inv.contextMine") : "Invoices for your orders, newest first");
         }
     },
 
@@ -88,7 +88,7 @@ window.Pages.invoices = {
         const info = this.container.querySelector("#invoicesPageInfo");
         const prev = this.container.querySelector("#invoicesPrevPage");
         const next = this.container.querySelector("#invoicesNextPage");
-        if (list) list.innerHTML = '<div class="empty-state">Loading invoices…</div>';
+        if (list) list.innerHTML = `<div class="empty-state">${window.t ? t("inv.loadingList") : "Loading invoices."}</div>`;
 
         try {
             if (this.isAdmin()) {
@@ -98,7 +98,9 @@ window.Pages.invoices = {
                 if (info) {
                     const from = this.invoices.length ? this.page * this.size + 1 : 0;
                     const to = this.page * this.size + this.invoices.length;
-                    info.textContent = `Showing ${from}–${to} of ${this.pageData.totalElements} · page ${this.pageData.page + 1} of ${Math.max(this.pageData.totalPages, 1)}`;
+                    info.textContent = window.t && window.I18n && I18n.getLang() === "bn"
+                        ? `${from}–${to} / মোট ${this.pageData.totalElements}টি · পৃষ্ঠা ${this.pageData.page + 1} / ${Math.max(this.pageData.totalPages, 1)}`
+                        : `Showing ${from}–${to} of ${this.pageData.totalElements} · page ${this.pageData.page + 1} of ${Math.max(this.pageData.totalPages, 1)}`;
                 }
                 if (prev) prev.disabled = !this.pageData.hasPrevious;
                 if (next) next.disabled = !this.pageData.hasNext;
@@ -112,16 +114,16 @@ window.Pages.invoices = {
             if (dlBtn) dlBtn.disabled = this.invoices.length === 0;
             this.render(this.invoices);
         } catch (error) {
-            if (list) list.innerHTML = `<div class="empty-state">Could not load invoices${error && error.message ? ": " + this.esc(error.message) : ""}</div>`;
+            if (list) list.innerHTML = `<div class="empty-state">${window.t ? t("inv.loadFail") : "Could not load invoices"}${error && error.message ? ": " + this.esc(error.message) : ""}</div>`;
         }
     },
 
     async deleteInvoice(invoiceId) {
         if (!invoiceId) return;
-        if (!window.confirm("Delete this invoice permanently? This cannot be undone.")) return;
+        if (!window.confirm(window.t ? t("inv.deleteConfirm") : "Delete this invoice permanently? This cannot be undone.")) return;
         try {
             await Api.del(`/invoices/admin/${invoiceId}`);
-            if (window.Toast) Toast.success("Invoice deleted");
+            if (window.Toast) Toast.success(window.t ? t("inv.deleted") : "Invoice deleted");
             this.invoices = this.invoices.filter((i) => i.id !== invoiceId);
             const detail = this.container.querySelector("#invoiceDetail");
             if (detail) detail.classList.add("hidden");

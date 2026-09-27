@@ -1498,6 +1498,34 @@ a.contact-card:hover {
   transform: scale(0.92);
 }
 
+/* Language toggle: sits next to the day/night button, same look. */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.375rem;
+  height: 2.375rem;
+  flex-shrink: 0;
+  padding: 0 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.lang-toggle:hover {
+  border-color: var(--color-brand-500);
+  color: var(--color-brand-700);
+}
+
+.lang-toggle:active {
+  transform: scale(0.92);
+}
+
 .profile-chip {
   display: flex;
   align-items: center;

@@ -119,9 +119,9 @@ window.Pages.messages = {
                               </a>`
                       )
                       .join("")
-                : '<div class="empty-state">No conversations yet. Open a thread from your orders or listings.</div>';
+                : `<div class="empty-state">${window.t ? t("msg.noConv") : "No conversations yet. Open a thread from your orders or listings."}</div>`;
         } catch (error) {
-            list.innerHTML = `<div class="empty-state">Could not load conversations${error && error.message ? ": " + this.esc(error.message) : ""}</div>`;
+            list.innerHTML = `<div class="empty-state">${window.t ? t("msg.loadFail") : "Could not load conversations"}${error && error.message ? ": " + this.esc(error.message) : ""}</div>`;
         }
     },
 
@@ -163,19 +163,19 @@ window.Pages.messages = {
                         </div>`
                   )
                   .join("")
-            : '<div class="empty-state">No conversations on the platform yet.</div>';
+            : `<div class="empty-state">${window.t ? t("msg.noConvAdmin") : "No conversations on the platform yet."}</div>`;
     },
 
     async deleteThread(convId) {
         if (!convId) return;
-        if (!window.confirm("Delete this conversation and all of its messages? This cannot be undone.")) return;
+        if (!window.confirm(window.t ? t("msg.deleteConfirm") : "Delete this conversation and all of its messages? This cannot be undone.")) return;
         try {
             await Api.del(`/messages/admin/conversations/${convId}`);
-            if (window.Toast) Toast.success("Conversation deleted");
+            if (window.Toast) Toast.success(window.t ? t("msg.deleted") : "Conversation deleted");
             if (this.activeConvId === convId) {
                 this.activeConvId = null;
                 const thread = this.container.querySelector("#convThread");
-                if (thread) thread.innerHTML = '<div class="empty-state">Select a conversation to read it.</div>';
+                if (thread) thread.innerHTML = `<div class="empty-state">${window.t ? t("msg.selectRead") : "Select a conversation to read it."}</div>`;
                 const composer = this.container.querySelector("#convComposer");
                 if (composer) composer.classList.add("hidden");
             }
@@ -196,7 +196,7 @@ window.Pages.messages = {
         this.activeConvId = convId;
         this.renderedIds = new Set();
 
-        thread.innerHTML = '<div class="empty-state">Loading…</div>';
+        thread.innerHTML = `<div class="empty-state">${window.t ? t("msg.loadingList") : "Loading."}</div>`;
 
         try {
             const res = this.isAdmin()
@@ -223,7 +223,7 @@ window.Pages.messages = {
             if (composer && !this.isAdmin()) composer.classList.remove("hidden");
             this.scrollThread();
         } catch (error) {
-            thread.innerHTML = `<div class="empty-state">Could not load thread.</div>`;
+            thread.innerHTML = `<div class="empty-state">${window.t ? t("msg.threadFail") : "Could not load thread."}</div>`;
             return;
         }
 
@@ -318,20 +318,20 @@ window.Pages.messages = {
         const d = new Date(iso);
         const today = new Date();
         if (d.toDateString() === today.toDateString()) {
-            return d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+            return d.toLocaleTimeString(window.I18n ? I18n.locale() : "en-IN", { hour: "2-digit", minute: "2-digit" });
         }
-        return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+        return d.toLocaleDateString(window.I18n ? I18n.locale() : "en-IN", { day: "numeric", month: "short" });
     },
 
     threadTime(iso) {
         if (!iso) return "";
         const d = new Date(iso);
         const today = new Date();
-        const time = d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+        const time = d.toLocaleTimeString(window.I18n ? I18n.locale() : "en-IN", { hour: "2-digit", minute: "2-digit" });
         if (d.toDateString() === today.toDateString()) {
             return time;
         }
-        return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + " " + time;
+        return d.toLocaleDateString(window.I18n ? I18n.locale() : "en-IN", { day: "numeric", month: "short", year: "numeric" }) + " " + time;
     },
 
     esc(v) {

@@ -114,6 +114,12 @@ window.Pages.orders = {
 
         this.bindControls();
         this.load();
+        if (!this._langBound) {
+            this._langBound = true;
+            document.addEventListener("langchange", () => {
+                if (this.container && this.container.isConnected) this.load();
+            });
+        }
     },
 
     async load() {
@@ -310,7 +316,7 @@ window.Pages.orders = {
             const id = accept.dataset.id;
             Api.post(`/orders/${id}/accept-offer`)
                 .then(() => {
-                    if (window.Toast) Toast.success("Offer accepted — the buyer now confirms address & payment");
+                    if (window.Toast) Toast.success(window.t ? t("od.offerAccepted") : "Offer accepted — the buyer now confirms address & payment");
                     this.loadOrders();
                 })
                 .catch((error) => {
@@ -334,10 +340,10 @@ window.Pages.orders = {
         const remove = event.target.closest("[data-order-remove]");
         if (remove) {
             const id = remove.dataset.id;
-            if (!window.confirm(`Cancel and remove order #${id}? This cannot be undone.`)) return;
+            if (!window.confirm(window.t && window.I18n && I18n.getLang() === "bn" ? `অর্ডার #${id} বাতিল ও মুছে ফেলবেন? ফেরত হবে না।` : `Cancel and remove order #${id}? This cannot be undone.`)) return;
             Api.del(`/orders/admin/${id}`)
                 .then(() => {
-                    if (window.Toast) Toast.success("Order cancelled and removed");
+                    if (window.Toast) Toast.success(window.t ? t("od.cancelled") : "Order cancelled and removed");
                     this.loadOrders();
                 })
                 .catch((error) => {
@@ -351,7 +357,7 @@ window.Pages.orders = {
 
         const id = button.dataset.id;
         const status = button.dataset.status;
-        if (!window.confirm(`Move order #${id} to ${status}?`)) return;
+        if (!window.confirm(window.t ? t("od.moveConfirm") : `Move order #${id} to ${status}?`)) return;
 
         const call = this.isAdmin
             ? Api.put(`/orders/admin/${id}/status`, { status })
@@ -480,7 +486,7 @@ window.Pages.orders = {
         const paymentMethod = this.value("#paymentMethod");
 
         if (!shippingAddress) {
-            if (window.Toast) Toast.error("Shipping address is required");
+            if (window.Toast) Toast.error(window.t ? t("od.addressRequired") : "Shipping address is required");
             return;
         }
 
@@ -583,13 +589,13 @@ window.Pages.orders = {
         const longitude = Number(this.value("#trackingLongitude"));
 
         if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-            if (window.Toast) Toast.error("Enter a valid latitude and longitude");
+            if (window.Toast) Toast.error(window.t ? t("od.latLng") : "Enter a valid latitude and longitude");
             return;
         }
 
         try {
             await Api.put(`/orders/${orderId}/tracking`, null, { latitude, longitude });
-            if (window.Toast) Toast.success("Live position updated");
+            if (window.Toast) Toast.success(window.t ? t("od.posUpdated") : "Live position updated");
             this.closeModal(this.container.querySelector("#trackingModal"));
             this.loadOrders();
         } catch (error) {
@@ -615,14 +621,14 @@ window.Pages.orders = {
         }
 
         const labels = {
-            withdraw: "Withdraw this offer?",
-            reject: "Reject this offer?",
+            withdraw: window.t ? t("od.withdrawQ") : "Withdraw this offer?",
+            reject: window.t ? t("od.rejectQ") : "Reject this offer?",
         };
-        if (!window.confirm(labels[action] || "Continue?")) return;
+        if (!window.confirm(labels[action] || (window.t ? t("od.continueQ") : "Continue?"))) return;
 
         Api.post(`/offers/${id}/${action}`)
             .then(() => {
-                if (window.Toast) Toast.success(`Offer ${action === "reject" ? "rejected" : "withdrawn"}`);
+                if (window.Toast) Toast.success(action === "reject" ? (window.t ? t("od.rejected") : "Offer rejected") : (window.t ? t("od.withdrawn") : "Offer withdrawn"));
                 this.loadOffers();
             })
             .catch((error) => {
@@ -690,12 +696,12 @@ window.Pages.orders = {
             if (this.role === "FARMER" && orderId) {
                 try {
                     await Api.post(`/orders/${orderId}/accept-offer`);
-                    if (window.Toast) Toast.success("Offer accepted — the buyer now confirms address & payment");
+                    if (window.Toast) Toast.success(window.t ? t("od.offerAccepted") : "Offer accepted — the buyer now confirms address & payment");
                 } catch (acceptError) {
                     if (window.Toast) Toast.fromResponse(acceptError, "Order created, but the offer could not be accepted yet");
                 }
             } else if (window.Toast) {
-                Toast.success("Order placed");
+                Toast.success(window.t ? t("od.placed") : "Order placed");
             }
 
             this.closeModal(this.container.querySelector("#acceptModal"));
@@ -717,13 +723,13 @@ window.Pages.orders = {
         };
 
         if (!body.offeredQuantity || body.offeredQuantity <= 0 || !body.offeredPrice || body.offeredPrice <= 0) {
-            if (window.Toast) Toast.error("Enter valid quantity and price");
+            if (window.Toast) Toast.error(window.t ? t("od.offerQtyPrice") : "Enter valid quantity and price");
             return;
         }
 
         try {
             await Api.post(`/offers/${offerId}/counter`, body);
-            if (window.Toast) Toast.success("Counter offer sent");
+            if (window.Toast) Toast.success(window.t ? t("od.counterSent") : "Counter offer sent");
             this.closeModal(this.container.querySelector("#counterModal"));
             this.loadOffers();
         } catch (error) {
@@ -745,35 +751,36 @@ window.Pages.orders = {
         wrap.hidden = false;
 
         const isFarmer = this.role === "FARMER";
+        const L = (en, key) => (window.t ? t(key) : en);
         const cards = [
             {
-                label: "Total orders",
+                label: L("Total orders", "od.total"),
                 value: this.number(stats.total || 0),
-                hint: "all time",
+                hint: L("all time", "od.allTime"),
                 tone: "brand",
             },
             {
-                label: isFarmer ? "Offers to accept" : "Awaiting payment",
+                label: isFarmer ? L("Offers to accept", "od.offersToAccept") : L("Awaiting payment", "od.awaitingPayment"),
                 value: this.number(stats.needsAction || 0),
-                hint: isFarmer ? "needs your decision" : "address + payment due",
+                hint: isFarmer ? L("needs your decision", "od.needsDecision") : L("address + payment due", "od.addressDue"),
                 tone: (stats.needsAction || 0) > 0 ? "warn" : "muted",
             },
             {
-                label: "In escrow",
+                label: L("In escrow", "od.escrow"),
                 value: this.number(stats.inEscrow || 0),
-                hint: "funds held safely",
+                hint: L("funds held safely", "od.heldSafe"),
                 tone: "good",
             },
             {
-                label: "On the road",
+                label: L("On the road", "od.onRoad"),
                 value: this.number(stats.inTransit || 0),
-                hint: "paid, not delivered",
+                hint: L("paid, not delivered", "od.paidNotDelivered"),
                 tone: "info",
             },
             {
-                label: "Delivered",
+                label: L("Delivered", "od.delivered"),
                 value: this.number(stats.delivered || 0),
-                hint: "escrow released",
+                hint: L("escrow released", "od.released"),
                 tone: "good",
             },
         ];
@@ -844,7 +851,7 @@ window.Pages.orders = {
 
         if (count) count.textContent = String(commitments.length);
         if (!commitments.length) {
-            wrap.innerHTML = '<div class="empty-state">No order commitments.</div>';
+                wrap.innerHTML = `<div class="empty-state">${window.t ? t("od.noCommitments") : "No order commitments."}</div>`;
             return;
         }
 
@@ -863,20 +870,20 @@ window.Pages.orders = {
 
                 const acceptButton =
                     this.role === "FARMER" && order.orderStatus === "PENDING"
-                        ? `<button type="button" class="btn btn-sm btn-primary" data-order-accept data-id="${this.esc(order.id)}">Accept offer</button>`
+                        ? `<button type="button" class="btn btn-sm btn-primary" data-order-accept data-id="${this.esc(order.id)}">${window.t ? t("od.acceptOffer") : "Accept offer"}</button>`
                         : "";
                 const payButton =
                     this.role === "BUYER" && this.PAYABLE_STAGES.includes(order.orderStatus)
-                        ? `<button type="button" class="btn btn-sm btn-primary" data-order-pay data-id="${this.esc(order.id)}">Pay &amp; confirm</button>`
+                        ? `<button type="button" class="btn btn-sm btn-primary" data-order-pay data-id="${this.esc(order.id)}">${window.t ? t("od.payConfirm") : "Pay & confirm"}</button>`
                         : "";
                 const trackButton =
                     (this.role === "FARMER" || this.isAdmin)
                         && this.LIVE_TRACKING_STAGES.includes(order.orderStatus)
                         && !this.SETTLED_STAGES.includes(order.orderStatus)
-                        ? `<button type="button" class="btn btn-sm btn-secondary" data-order-track data-id="${this.esc(order.id)}">Update position</button>`
+                        ? `<button type="button" class="btn btn-sm btn-secondary" data-order-track data-id="${this.esc(order.id)}">${window.t ? t("od.updatePos") : "Update position"}</button>`
                         : "";
                 const removeButton = this.isAdmin
-                    ? `<button type="button" class="btn btn-sm btn-danger" data-order-remove data-id="${this.esc(order.id)}">Remove</button>`
+                    ? `<button type="button" class="btn btn-sm btn-danger" data-order-remove data-id="${this.esc(order.id)}">${window.t ? t("od.remove") : "Remove"}</button>`
                     : "";
 
                 const actions = [acceptButton, payButton, trackButton, workflowButtons, removeButton]
@@ -884,7 +891,7 @@ window.Pages.orders = {
                     .join("");
                 const chatButton = this.isAdmin
                     ? ""
-                    : `<button type="button" class="btn btn-sm btn-secondary" data-order-chat data-id="${this.esc(order.id)}">💬 Chat</button>`;
+                    : `<button type="button" class="btn btn-sm btn-secondary" data-order-chat data-id="${this.esc(order.id)}">💬 ${window.t ? t("od.chat") : "Chat"}</button>`;
                 const paymentCell = this.paymentCellHtml(order);
                 const trackingCell = this.trackingCellHtml(order);
 
@@ -913,17 +920,17 @@ window.Pages.orders = {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Order</th>
-                            <th>Crop</th>
-                            <th>Qty</th>
-                            <th>Unit Price</th>
-                            <th>Total</th>
-                            <th>Delivery Address</th>
-                            <th>Payment</th>
-                            <th>Live Tracking</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>${window.t ? t("od.thOrder") : "Order"}</th>
+                            <th>${window.t ? t("od.thCrop") : "Crop"}</th>
+                            <th>${window.t ? t("od.thQty") : "Qty"}</th>
+                            <th>${window.t ? t("od.thUnitPrice") : "Unit Price"}</th>
+                            <th>${window.t ? t("od.thTotal") : "Total"}</th>
+                            <th>${window.t ? t("od.thAddress") : "Delivery Address"}</th>
+                            <th>${window.t ? t("od.thPayment") : "Payment"}</th>
+                            <th>${window.t ? t("od.thTracking") : "Live Tracking"}</th>
+                            <th>${window.t ? t("od.thDate") : "Date"}</th>
+                            <th>${window.t ? t("od.thStatus") : "Status"}</th>
+                            <th>${window.t ? t("od.thActions") : "Actions"}</th>
                         </tr>
                     </thead>
                     <tbody>${rows}</tbody>
@@ -992,9 +999,12 @@ window.Pages.orders = {
 
         if (info) {
             const totalPages = Math.max(this.ordersTotalPages, 1);
+            const bn = window.t && window.I18n && I18n.getLang() === "bn";
             const label = this.ordersTotalPages > 1
-                ? `Page ${this.ordersPage + 1} of ${totalPages} · ${this.orders.length} shown`
-                : `${this.orders.length} order${this.orders.length === 1 ? "" : "s"}`;
+                ? (bn ? `পৃষ্ঠা ${this.ordersPage + 1} / ${totalPages} · ${this.orders.length}টি দেখানো`
+                    : `Page ${this.ordersPage + 1} of ${totalPages} · ${this.orders.length} shown`)
+                : (bn ? `${this.orders.length}টি অর্ডার`
+                    : `${this.orders.length} order${this.orders.length === 1 ? "" : "s"}`);
             info.textContent = label;
         }
         if (prevBtn) prevBtn.disabled = !this.ordersHasPrevious;
@@ -1008,13 +1018,15 @@ window.Pages.orders = {
 
         if (count) {
             count.textContent = this.offersTotalPages > 1
-                ? `${this.offersTotal} total`
+                ? (window.t && window.I18n && I18n.getLang() === "bn"
+                    ? `মোট ${this.offersTotal}টি`
+                    : `${this.offersTotal} total`)
                 : String(this.offersTotal);
         }
         if (!offers.length) {
             wrap.innerHTML = this.offersPage > 0
-                ? '<div class="empty-state">No more negotiations on this page.</div>'
-                : '<div class="empty-state">No offers to review yet.</div>';
+                ? `<div class="empty-state">${window.t ? t("od.noMoreNegotiations") : "No more negotiations on this page."}</div>`
+                : `<div class="empty-state">${window.t ? t("od.noOffers") : "No offers to review yet."}</div>`;
             return;
         }
 
@@ -1030,12 +1042,12 @@ window.Pages.orders = {
                 if (pending) {
                     if (this.role === "FARMER") {
                         actions = `
-                            <button type="button" class="btn btn-sm btn-primary" data-offer-action="accept" data-id="${this.esc(offer.id)}">Accept</button>
-                            <button type="button" class="btn btn-sm btn-secondary" data-offer-action="counter" data-id="${this.esc(offer.id)}">Counter</button>
-                            <button type="button" class="btn btn-sm btn-danger" data-offer-action="reject" data-id="${this.esc(offer.id)}">Reject</button>`;
+                            <button type="button" class="btn btn-sm btn-primary" data-offer-action="accept" data-id="${this.esc(offer.id)}">${window.t ? t("od.accept") : "Accept"}</button>
+                            <button type="button" class="btn btn-sm btn-secondary" data-offer-action="counter" data-id="${this.esc(offer.id)}">${window.t ? t("od.counter") : "Counter"}</button>
+                            <button type="button" class="btn btn-sm btn-danger" data-offer-action="reject" data-id="${this.esc(offer.id)}">${window.t ? t("od.reject") : "Reject"}</button>`;
                     } else if (this.role === "BUYER") {
                         actions = `
-                            <button type="button" class="btn btn-sm btn-danger" data-offer-action="withdraw" data-id="${this.esc(offer.id)}">Withdraw</button>`;
+                            <button type="button" class="btn btn-sm btn-danger" data-offer-action="withdraw" data-id="${this.esc(offer.id)}">${window.t ? t("od.withdraw") : "Withdraw"}</button>`;
                     }
                 }
 
@@ -1073,8 +1085,10 @@ window.Pages.orders = {
             const from = this.offersTotal === 0 ? 0 : this.offersPage * this.offersPageSize + 1;
             const to = Math.min(from + this.offers.length - 1, this.offersTotal);
             info.textContent = this.offersTotal === 0
-                ? "No negotiations"
-                : `Showing ${from}–${to} of ${this.offersTotal} · page ${this.offersPage + 1} of ${totalPages}`;
+                ? (window.t && window.I18n && I18n.getLang() === "bn" ? "কোনো দরাদরি নেই" : "No negotiations")
+                : (window.t && window.I18n && I18n.getLang() === "bn"
+                    ? `${from}–${to} / মোট ${this.offersTotal}টি · পৃষ্ঠা ${this.offersPage + 1} / ${totalPages}`
+                    : `Showing ${from}–${to} of ${this.offersTotal} · page ${this.offersPage + 1} of ${totalPages}`);
         }
         if (prevBtn) prevBtn.disabled = !this.offersHasPrevious;
         if (nextBtn) nextBtn.disabled = !this.offersHasNext;
@@ -1143,8 +1157,9 @@ window.Pages.orders = {
     },
 
     date(iso) {
+        const locale = window.I18n ? I18n.locale() : "en-IN";
         return iso
-            ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+            ? new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" })
             : "—";
     },
 

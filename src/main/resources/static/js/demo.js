@@ -38,7 +38,8 @@
         wrap.className = "demo-login";
         var title = document.createElement("p");
         title.className = "demo-title";
-        title.textContent = "Try a demo account (view only)";
+        title.textContent = window.t ? t("demo.title") : "Try a demo account (view only)";
+        title.setAttribute("data-i18n", "demo.title");
         wrap.appendChild(title);
 
         var box = document.createElement("div");
@@ -60,5 +61,8 @@
         });
         wrap.appendChild(box);
         form.appendChild(wrap);
+        document.addEventListener("langchange", function () {
+            if (window.t) title.textContent = t("demo.title");
+        });
     });
 })();

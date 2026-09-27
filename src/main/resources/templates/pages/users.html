@@ -11,148 +11,148 @@
 <section class="page">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Administration</p>
-            <h1 class="section-title mb-0">User Management</h1>
+            <p class="section-eyebrow" data-i18n="usr.eyebrow">Administration</p>
+            <h1 class="section-title mb-0" data-i18n="usr.title">User Management</h1>
             <p class="text-muted mb-0" id="usersContext"></p>
         </div>
         <div class="flex gap-2">
-            <button type="button" class="btn btn-danger btn-sm" id="usersBulkDeleteBtn" hidden>Delete Selected (<span id="usersSelectedCount">0</span>)</button>
-            <button type="button" class="btn btn-primary btn-sm" id="usersAddBtn">+ Create User</button>
-            <button type="button" class="btn btn-secondary btn-sm" data-users-refresh>Refresh</button>
+            <button type="button" class="btn btn-danger btn-sm" id="usersBulkDeleteBtn" hidden><span data-i18n="usr.deleteSelected">Delete Selected</span> (<span id="usersSelectedCount">0</span>)</button>
+            <button type="button" class="btn btn-primary btn-sm" id="usersAddBtn" data-i18n="usr.create">+ Create User</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-users-refresh data-i18n="page.refresh">Refresh</button>
         </div>
     </div>
 
     <div class="grid grid-cols-4 gap-4 mb-6" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
         <div class="card">
-            <p class="text-muted mb-0" style="font-size: 0.8rem;">Total Users</p>
+            <p class="text-muted mb-0" style="font-size: 0.8rem;" data-i18n="usr.total">Total Users</p>
             <p class="mb-0" style="font-size: 1.6rem; font-weight: 700;" id="usersStatTotal">0</p>
         </div>
         <div class="card">
-            <p class="text-muted mb-0" style="font-size: 0.8rem;">Total Admins</p>
+            <p class="text-muted mb-0" style="font-size: 0.8rem;" data-i18n="usr.admins">Total Admins</p>
             <p class="mb-0" style="font-size: 1.6rem; font-weight: 700;" id="usersStatAdmins">0</p>
         </div>
         <div class="card">
-            <p class="text-muted mb-0" style="font-size: 0.8rem;">Active</p>
+            <p class="text-muted mb-0" style="font-size: 0.8rem;" data-i18n="usr.active">Active</p>
             <p class="mb-0" style="font-size: 1.6rem; font-weight: 700; color: #22c55e;" id="usersStatActive">0</p>
         </div>
         <div class="card">
-            <p class="text-muted mb-0" style="font-size: 0.8rem;">Deactivated</p>
+            <p class="text-muted mb-0" style="font-size: 0.8rem;" data-i18n="usr.inactive">Deactivated</p>
             <p class="mb-0" style="font-size: 1.6rem; font-weight: 700; color: #ef4444;" id="usersStatInactive">0</p>
         </div>
     </div>
 
     <div class="flex flex-wrap gap-3 mb-6">
-        <select id="userRoleFilter" class="select" style="max-width: 220px;" aria-label="Filter by role">
-            <option value="">All roles</option>
-            <option value="FARMER">Farmers</option>
-            <option value="BUYER">Buyers</option>
-            <option value="ADMIN">Admins</option>
-            <option value="SUPER_ADMIN">Super Admins</option>
+        <select id="userRoleFilter" class="select" style="max-width: 220px;" aria-label="Filter by role" data-i18n-aria="usr.roleLabel">
+            <option value="" data-i18n="usr.allRoles">All roles</option>
+            <option value="FARMER" data-i18n="role.farmer">Farmers</option>
+            <option value="BUYER" data-i18n="role.buyer">Buyers</option>
+            <option value="ADMIN" data-i18n="usr.adminsOpt">Admins</option>
+            <option value="SUPER_ADMIN" data-i18n="usr.superAdmins">Super Admins</option>
         </select>
-        <input id="usersSearch" class="input" style="max-width: 320px;" type="search" placeholder="Search by name or email...">
+        <input id="usersSearch" class="input" style="max-width: 320px;" type="search" placeholder="Search by name or email..." data-i18n-ph="usr.searchPh">
     </div>
 
     <div class="card" id="usersCard">
         <div class="card-header">
-            <h2 class="card-title">Users</h2>
+            <h2 class="card-title" data-i18n="usr.list">Users</h2>
             <span class="badge badge-info" id="usersCount">0</span>
         </div>
         <div id="usersTableWrap">
-            <div class="empty-state">Loading users...</div>
+            <div class="empty-state" data-i18n="usr.loading">Loading users...</div>
         </div>
         <div class="flex items-center justify-center gap-4 mt-4" id="usersPagination" hidden>
-            <button type="button" class="btn btn-secondary btn-sm" id="usersPrevPage">&larr; Previous</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="usersPrevPage">&larr; <span data-i18n="usr.prev">Previous</span></button>
             <span class="text-muted" id="usersPageInfo" style="font-size: 0.85rem;"></span>
-            <button type="button" class="btn btn-secondary btn-sm" id="usersNextPage">Next &rarr;</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="usersNextPage"><span data-i18n="usr.next">Next</span> &rarr;</button>
         </div>
     </div>
 </section>
 
 <div class="modal-backdrop" id="userModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
-        <button type="button" class="modal-close" data-user-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="userModalTitle">Create User</h2>
+        <button type="button" class="modal-close" data-user-modal-close aria-label="Close" data-i18n-aria="common.close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="userModalTitle" data-i18n="usr.createTitle">Create User</h2>
         <form id="userForm" novalidate>
             <div class="field">
-                <label for="userName">Full name</label>
-                <input id="userName" class="input" type="text" name="name" placeholder="e.g. Ashok Kumar" required>
+                <label for="userName" data-i18n="usr.fullName">Full name</label>
+                <input id="userName" class="input" type="text" name="name" placeholder="e.g. Ashok Kumar" required data-i18n-ph="usr.fullNamePh">
             </div>
             <div class="field">
-                <label for="userEmail">Email</label>
+                <label for="userEmail" data-i18n="usr.email">Email</label>
                 <input id="userEmail" class="input" type="email" name="email" placeholder="user@company.com" required>
             </div>
             <div class="field">
-                <label for="userPassword">Password</label>
-                <input id="userPassword" class="input" type="password" name="password" placeholder="Minimum 8 characters" required minlength="8">
+                <label for="userPassword" data-i18n="usr.password">Password</label>
+                <input id="userPassword" class="input" type="password" name="password" placeholder="Minimum 8 characters" required minlength="8" data-i18n-ph="usr.passwordPh">
             </div>
             <div class="field">
-                <label for="userRole">Role</label>
+                <label for="userRole" data-i18n="usr.role">Role</label>
                 <select id="userRole" class="select" name="role" required>
-                    <option value="">Select role</option>
-                    <option value="FARMER">Farmer</option>
-                    <option value="BUYER">Buyer</option>
-                    <option value="ADMIN">Admin</option>
+                    <option value="" data-i18n="usr.selectRole">Select role</option>
+                    <option value="FARMER" data-i18n="role.farmer">Farmer</option>
+                    <option value="BUYER" data-i18n="role.buyer">Buyer</option>
+                    <option value="ADMIN" data-i18n="role.admin">Admin</option>
                 </select>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="field">
-                    <label for="userPhone">Phone (optional)</label>
+                    <label for="userPhone" data-i18n="usr.phone">Phone (optional)</label>
                     <input id="userPhone" class="input" type="tel" name="phone" placeholder="+880-1712-345678">
                 </div>
                 <div class="field">
-                    <label for="userLocation">Location (optional)</label>
-                    <input id="userLocation" class="input" type="text" name="location" placeholder="Dhaka, Bangladesh">
+                <label for="userLocation" data-i18n="usr.location">Location (optional)</label>
+                <input id="userLocation" class="input" type="text" name="location" placeholder="Dhaka, Bangladesh" data-i18n-ph="usr.locationPh">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Create User</button>
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="usr.createBtn">Create User</button>
         </form>
     </div>
 </div>
 
 <div class="modal-backdrop" id="userEditModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userEditModalTitle">
-        <button type="button" class="modal-close" data-user-edit-modal-close aria-label="Close">×</button>
-        <h2 class="modal-title" id="userEditModalTitle">Edit User</h2>
+        <button type="button" class="modal-close" data-user-edit-modal-close aria-label="Close" data-i18n-aria="common.close"><span aria-hidden="true">&times;</span></button>
+        <h2 class="modal-title" id="userEditModalTitle" data-i18n="usr.editTitle">Edit User</h2>
         <form id="userEditForm" novalidate>
             <input type="hidden" id="userEditId">
             <div class="field">
-                <label for="userEditName">Full name</label>
+                <label for="userEditName" data-i18n="usr.fullName">Full name</label>
                 <input id="userEditName" class="input" type="text" name="name" required minlength="2">
             </div>
             <div class="field">
-                <label for="userEditEmail">Email</label>
+                <label for="userEditEmail" data-i18n="usr.email">Email</label>
                 <input id="userEditEmail" class="input" type="email" disabled title="Email cannot be changed">
             </div>
             <div class="field" id="userEditRoleField" hidden>
-                <label for="userEditRole">Role</label>
+                <label for="userEditRole" data-i18n="usr.role">Role</label>
                 <select id="userEditRole" class="select" name="role">
-                    <option value="FARMER">Farmer</option>
-                    <option value="BUYER">Buyer</option>
-                    <option value="ADMIN">Admin</option>
+                    <option value="FARMER" data-i18n="role.farmer">Farmer</option>
+                    <option value="BUYER" data-i18n="role.buyer">Buyer</option>
+                    <option value="ADMIN" data-i18n="role.admin">Admin</option>
                 </select>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="field">
-                    <label for="userEditPhone">Phone (optional)</label>
+                    <label for="userEditPhone" data-i18n="usr.phone">Phone (optional)</label>
                     <input id="userEditPhone" class="input" type="tel" name="phone">
                 </div>
                 <div class="field">
-                    <label for="userEditLocation">Location (optional)</label>
+                    <label for="userEditLocation" data-i18n="usr.location">Location (optional)</label>
                     <input id="userEditLocation" class="input" type="text" name="location">
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            <button type="submit" class="btn btn-primary btn-block" data-i18n="usr.saveBtn">Save Changes</button>
         </form>
     </div>
 </div>
 
 <div class="modal-backdrop" id="userConfirmModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userConfirmTitle" style="max-width: 380px;">
-        <h2 class="modal-title" id="userConfirmTitle">Please confirm</h2>
-        <p class="text-muted" id="userConfirmMessage">Are you sure?</p>
+        <h2 class="modal-title" id="userConfirmTitle" data-i18n="usr.confirmTitle">Please confirm</h2>
+        <p class="text-muted" id="userConfirmMessage" data-i18n="usr.confirmMsg">Are you sure?</p>
         <div class="flex gap-2 justify-end mt-4">
-            <button type="button" class="btn btn-secondary btn-sm" id="userConfirmCancelBtn">Cancel</button>
-            <button type="button" class="btn btn-danger btn-sm" id="userConfirmOkBtn">Confirm</button>
+            <button type="button" class="btn btn-secondary btn-sm" id="userConfirmCancelBtn" data-i18n="usr.cancel">Cancel</button>
+            <button type="button" class="btn btn-danger btn-sm" id="userConfirmOkBtn" data-i18n="usr.confirm">Confirm</button>
         </div>
     </div>
 </div>

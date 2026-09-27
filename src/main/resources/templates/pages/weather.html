@@ -87,41 +87,41 @@
 <section class="page" data-page="weather">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Weather</p>
-            <h1 class="section-title mb-1">District Weather Forecast</h1>
-            <p class="text-muted mb-0">7-day forecast for your farming location</p>
+            <p class="section-eyebrow" data-i18n="wx.eyebrow">Weather</p>
+            <h1 class="section-title mb-1" data-i18n="wx.title">District Weather Forecast</h1>
+            <p class="text-muted mb-0" data-i18n="wx.sub">7-day forecast for your farming location</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             <div class="wx-search" role="search">
-                <label class="sr-only" for="weather-district-search">Search district</label>
+                <label class="sr-only" for="weather-district-search" data-i18n="wx.searchLabel">Search district</label>
                 <input id="weather-district-search" type="search" class="wx-search-input"
-                       placeholder="🔍 Search district…" autocomplete="off"
+                       placeholder="Search district..." data-i18n-ph="wx.search" autocomplete="off"
                        role="combobox" aria-expanded="false" aria-controls="weather-search-results"
                        aria-autocomplete="list">
                 <ul id="weather-search-results" class="wx-search-results" role="listbox" hidden></ul>
             </div>
-            <label class="sr-only" for="weather-district-select">District</label>
-            <select id="weather-district-select" class="form-select" aria-label="District">
-                <option value="">Loading districts…</option>
+            <label class="sr-only" for="weather-district-select" data-i18n="wx.district">District</label>
+            <select id="weather-district-select" class="form-select" aria-label="District" data-i18n-aria="wx.district">
+                <option value="" data-i18n="wx.loadingDistricts">Loading districts...</option>
             </select>
             <button type="button" class="btn btn-primary" id="weather-refresh-btn">
                 <span class="wx-spinner" hidden aria-hidden="true"></span>
-                <span class="wx-refresh-label">Refresh</span>
+                <span class="wx-refresh-label" data-i18n="common.refresh">Refresh</span>
             </button>
         </div>
     </div>
 
     <div id="weatherCurrent" class="card mb-4" aria-live="polite">
-        <div class="empty-state" id="weatherLoading">Loading forecast...</div>
+        <div class="empty-state" id="weatherLoading" data-i18n="wx.loading">Loading forecast...</div>
     </div>
 
     <div class="card">
         <div class="card-header">
-            <h2 class="card-title">7-Day Outlook</h2>
-            <span class="badge badge-info" id="weatherSummaryBadge">—</span>
+            <h2 class="card-title" data-i18n="wx.outlook">7-Day Outlook</h2>
+            <span class="badge badge-info" id="weatherSummaryBadge">â€”</span>
         </div>
         <div id="weatherDaily" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            <div class="empty-state">No forecast data yet.</div>
+            <div class="empty-state" data-i18n="wx.noData">No forecast data yet.</div>
         </div>
         <p class="text-muted mt-4 mb-0" style="font-size: 0.75rem;" id="weatherDisclaimer"></p>
     </div>
@@ -129,10 +129,10 @@
     <template id="weatherDailyTpl">
         <div class="stat-card">
             <div class="stat-card-head">
-                <span class="stat-card-icon weather-day-icon">☀️</span>
+                <span class="stat-card-icon weather-day-icon">â˜€ï¸</span>
                 <span class="badge badge-info weather-day"></span>
             </div>
-            <div class="stat-value weather-temp">--°C</div>
+            <div class="stat-value weather-temp">--Â°C</div>
             <div class="text-muted weather-desc">--</div>
             <div class="text-muted weather-meta">--</div>
             <span class="badge weather-advice" hidden></span>

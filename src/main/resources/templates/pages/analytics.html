@@ -1,29 +1,29 @@
 <section class="page">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Insights</p>
-            <h1 class="section-title mb-0">Analytics</h1>
-            <p class="section-subtitle mb-0" id="analyticsWindowLabel">Platform performance</p>
+            <p class="section-eyebrow" data-i18n="an.eyebrow">Insights</p>
+            <h1 class="section-title mb-0" data-i18n="an.title">Analytics</h1>
+            <p class="section-subtitle mb-0" id="analyticsWindowLabel" data-i18n="an.window">Platform performance</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-            <label class="sr-only" for="analyticsMonths">Reporting window</label>
-            <select id="analyticsMonths" class="select" aria-label="Reporting window">
-                <option value="3">Last 3 months</option>
-                <option value="6" selected>Last 6 months</option>
-                <option value="12">Last 12 months</option>
-                <option value="24">Last 24 months</option>
+            <label class="sr-only" for="analyticsMonths" data-i18n="an.windowLabel">Reporting window</label>
+            <select id="analyticsMonths" class="select" aria-label="Reporting window" data-i18n-aria="an.windowLabel">
+                <option value="3" data-i18n="an.m3">Last 3 months</option>
+                <option value="6" selected data-i18n="an.m6">Last 6 months</option>
+                <option value="12" data-i18n="an.m12">Last 12 months</option>
+                <option value="24" data-i18n="an.m24">Last 24 months</option>
             </select>
-            <button type="button" class="btn btn-secondary btn-sm" data-analytics-refresh>Refresh</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-analytics-refresh data-i18n="page.refresh">Refresh</button>
         </div>
     </div>
 
-    <section class="attention" id="analyticsAttention" hidden aria-label="Needs your attention"></section>
+    <section class="attention" id="analyticsAttention" hidden aria-label="Needs your attention" data-i18n-aria="page.attention"></section>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 dashboard-card-grid" id="analyticsStats"></div>
 
     <div class="section-heading" id="analytics-charts-heading" hidden>
-        <h2 class="section-title">Charts</h2>
-        <p class="section-subtitle">Every series is grouped by the month the record was created.</p>
+        <h2 class="section-title" data-i18n="an.charts">Charts</h2>
+        <p class="section-subtitle" data-i18n="an.chartsSub">Every series is grouped by the month the record was created.</p>
     </div>
     <div class="grid grid-cols-1" id="analyticsCharts"></div>
 </section>

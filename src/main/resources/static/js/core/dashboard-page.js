@@ -103,13 +103,15 @@ window.DashboardPage = (function () {
         const setGreeting = () => {
             const user = window.Api && Api.getUser ? Api.getUser() : null;
             const name = user && user.name ? String(user.name).trim() : "";
+            const bn = window.t && window.I18n && I18n.getLang() === "bn";
             const greeting = q("#%PREFIX%-greeting");
             const dateEl = q("#%PREFIX%-date");
             if (greeting) {
-                greeting.textContent = name ? `Welcome back, ${name}.` : "Welcome back";
+                const hello = window.t ? t("ov.welcomeBack") : "Welcome back";
+                greeting.textContent = name ? (bn ? `${hello}, ${name}।` : `${hello}, ${name}.`) : hello;
             }
             if (dateEl) {
-                dateEl.textContent = new Date().toLocaleDateString("en-IN", {
+                dateEl.textContent = new Date().toLocaleDateString(bn ? "bn-BD" : "en-IN", {
                     weekday: "long", day: "numeric", month: "long", year: "numeric",
                 });
             }
@@ -121,8 +123,8 @@ window.DashboardPage = (function () {
             const platform = dto.scope === "platform";
             badge.hidden = !platform;
             if (platform) {
-                badge.textContent = "Whole platform";
-                badge.title = "These totals cover every farmer, buyer and order, not just your own.";
+                badge.textContent = window.t ? t("ov.scopeBadge") : "Whole platform";
+                badge.title = window.t ? t("ov.scopeTitle") : "These totals cover every farmer, buyer and order, not just your own.";
             }
         };
 
@@ -213,6 +215,15 @@ window.DashboardPage = (function () {
             const host = q("#%PREFIX%-weather");
             if (host && window.WeatherWidget) {
                 state.weather = WeatherWidget.mount(host, prefix, isPlatform());
+            }
+
+            if (!state._langBound) {
+                state._langBound = true;
+                document.addEventListener("langchange", () => {
+                    if (!state.container || !state.container.isConnected) return;
+                    setGreeting();
+                    load();
+                });
             }
         };
 

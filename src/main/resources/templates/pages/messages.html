@@ -1,41 +1,41 @@
 <section class="page" data-page="messages">
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Messaging</p>
-            <h1 class="section-title mb-1">Conversations</h1>
-            <p class="text-muted mb-0">Chat with buyers &amp; farmers about your orders.</p>
+            <p class="section-eyebrow" data-i18n="msg.eyebrow">Messaging</p>
+            <h1 class="section-title mb-1" data-i18n="msg.title">Conversations</h1>
+            <p class="text-muted mb-0" data-i18n="msg.sub">Chat with buyers &amp; farmers about your orders.</p>
         </div>
-        <a href="#" class="btn btn-outline btn-sm" data-route="orders">← Back to Orders</a>
+        <a href="#" class="btn btn-outline btn-sm" data-route="orders"><span aria-hidden="true">&larr;</span> <span data-i18n="msg.backOrders">Back to Orders</span></a>
     </div>
 
     <div class="alert alert-info mb-4" data-admin-only hidden>
-        <strong>Admin moderation view.</strong> Every conversation on the platform, newest first. Threads are read-only here and can be deleted permanently.
+        <strong data-i18n="msg.adminView">Admin moderation view.</strong> <span data-i18n="msg.adminViewText">Every conversation on the platform, newest first. Threads are read-only here and can be deleted permanently.</span>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-0" style="min-height: 26rem;">
         <div class="card" style="border-right: none;">
             <div class="card-header">
-                <h2 class="card-title" id="convListTitle">Threads</h2>
+                <h2 class="card-title" id="convListTitle" data-i18n="msg.threads">Threads</h2>
                 <span class="badge badge-info" id="convUnread">0</span>
             </div>
             <div id="convList" style="max-height: 20rem; overflow-y: auto;">
-                <div class="empty-state" id="convLoading">Loading conversations...</div>
+                <div class="empty-state" id="convLoading" data-i18n="msg.loading">Loading conversations...</div>
             </div>
             <div class="card-footer flex flex-wrap items-center justify-between gap-2" data-admin-only hidden>
                 <span class="text-muted" id="convsPageInfo" style="font-size: 0.75rem;"></span>
                 <div class="flex items-center gap-2">
-                    <button type="button" class="btn btn-secondary btn-sm" id="convsPrevPage">Prev</button>
-                    <button type="button" class="btn btn-secondary btn-sm" id="convsNextPage">Next</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="convsPrevPage"><span data-i18n="pd.prev">Prev</span></button>
+                <button type="button" class="btn btn-secondary btn-sm" id="convsNextPage"><span data-i18n="pd.next">Next</span></button>
                 </div>
             </div>
         </div>
         <div class="card md:col-span-2">
             <div id="convThread" class="d-flex flex-column" style="height: 100%;">
-                <div id="convOpen" class="empty-state">Select a conversation to view messages.</div>
+                <div id="convOpen" class="empty-state" data-i18n="msg.open">Select a conversation to view messages.</div>
             </div>
             <div id="convComposer" class="p-3 hidden" style="border-top: 1px solid var(--color-border);">
                 <form id="chatForm" class="flex items-center gap-2">
-                    <input id="chatInput" class="input flex-1" type="text" maxlength="2000" placeholder="Type a message…" autocomplete="off">
+                    <input id="chatInput" class="input flex-1" type="text" maxlength="2000" placeholder="Type a message..." autocomplete="off" data-i18n-ph="msg.typePh">
                     <button type="submit" class="btn btn-primary btn-sm">Send</button>
                 </form>
             </div>

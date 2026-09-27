@@ -94,6 +94,13 @@
             this.bindTopbar();
             this.bindDrawer();
             this.bindTheme();
+            if (window.I18n) {
+                I18n.init();
+                document.addEventListener("langchange", () => {
+                    this.renderProfile();
+                    this.renderSidebar();
+                });
+            }
 
             this.refreshProfile();
 
@@ -129,6 +136,8 @@
         },
 
         formatRole(role) {
+            const map = { SUPER_ADMIN: "role.superAdmin", ADMIN: "role.admin", FARMER: "role.farmer", BUYER: "role.buyer" };
+            if (window.I18n && map[role]) return I18n.t(map[role]);
             return role
                 .toLowerCase()
                 .split("_")
@@ -163,7 +172,13 @@
                 })
                 .join("");
 
-            nav.innerHTML = `<div class="sidebar-section-label">Menu</div>${menu}`;
+            nav.innerHTML = `<div class="sidebar-section-label">${window.t ? t("shell.menu") : "Menu"}</div>${menu}`;
+
+            // Rebuilding wipes the active link (e.g. after a language switch),
+            // so highlight the current route again right away.
+            if (Router.highlight && Router.parseRoute) {
+                Router.highlight(Router.parseRoute());
+            }
         },
 
         bindTopbar() {

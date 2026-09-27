@@ -545,7 +545,7 @@ window.DashboardView = (function () {
             </div>
             <div class="chart-body chart-body-empty" data-chart-body="${esc(spec.key || "")}">
                 <div class="empty-state">
-                    <p class="mb-1">No data for this period yet.</p>
+                    <p class="mb-1">${window.t ? t("dv.noDataPeriod") : "No data for this period yet."}</p>
                     <p class="mb-0">${esc(spec.subtitle || "Records will appear here as soon as there is activity.")}</p>
                 </div>
             </div>
@@ -586,7 +586,7 @@ window.DashboardView = (function () {
         } catch (error) {
             root.querySelectorAll(".chart-body").forEach((body) => {
                 body.classList.add("chart-body-empty");
-                body.innerHTML = '<div class="empty-state">Charts are unavailable right now.</div>';
+                body.innerHTML = `<div class="empty-state">${window.t ? t("dv.chartsDown") : "Charts are unavailable right now."}</div>`;
             });
             return;
         }
@@ -623,7 +623,7 @@ window.DashboardView = (function () {
                 registry.push({ root, chart, spec });
             } catch (error) {
                 body.classList.add("chart-body-empty");
-                body.innerHTML = '<div class="empty-state">This chart could not be drawn.</div>';
+                body.innerHTML = `<div class="empty-state">${window.t ? t("dv.chartBroken") : "This chart could not be drawn."}</div>`;
             }
         });
     };
@@ -656,7 +656,7 @@ window.DashboardView = (function () {
         const compact = !!(opts && opts.compact);
         if (!list.length) {
             root.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 dashboard-card-grid";
-            root.innerHTML = '<div class="empty-state">No metrics yet.</div>';
+            root.innerHTML = `<div class="empty-state">${window.t ? t("dv.noMetrics") : "No metrics yet."}</div>`;
             return;
         }
         let columns;
@@ -728,7 +728,7 @@ window.DashboardView = (function () {
         if (!root) return;
         const list = items || [];
         if (!list.length) {
-            root.innerHTML = '<div class="empty-state">Nothing has happened yet. New orders will show up here.</div>';
+            root.innerHTML = `<div class="empty-state">${window.t ? t("dv.noActivity") : "Nothing has happened yet. New orders will show up here."}</div>`;
             return;
         }
         root.innerHTML = list
@@ -779,14 +779,14 @@ window.DashboardView = (function () {
                         <tbody>${spec.rows.map((row) => rowMarkup(row, columns)).join("")}</tbody>
                    </table>
                </div>`
-            : `<div class="empty-state">${esc(spec.emptyMessage || "Nothing to show yet.")}</div>`;
+            : `<div class="empty-state">${esc(spec.emptyMessage || (window.t ? t("dv.emptyTable") : "Nothing to show yet."))}</div>`;
 
         const limit = spec.rowLimitNote
             ? `<p class="table-note">${esc(spec.rowLimitNote)}</p>`
             : "";
 
         const more = spec.viewMoreRoute
-            ? `<button type="button" class="pro-viewmore" data-viewmore-route="${esc(spec.viewMoreRoute)}">${esc(spec.viewMoreLabel || "View more")} <span aria-hidden="true">→</span></button>`
+            ? `<button type="button" class="pro-viewmore" data-viewmore-route="${esc(spec.viewMoreRoute)}">${esc(spec.viewMoreLabel || (window.t ? t("dv.viewMore") : "View more"))} <span aria-hidden="true">→</span></button>`
             : "";
 
         return `

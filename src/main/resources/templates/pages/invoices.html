@@ -13,30 +13,30 @@
 
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-            <p class="section-eyebrow">Invoices</p>
-            <h1 class="section-title mb-1">Digital Invoices</h1>
-            <p class="text-muted mb-0" id="invoiceContext">Auto-calculated from your order · PDF export via browser print</p>
+            <p class="section-eyebrow" data-i18n="inv.eyebrow">Invoices</p>
+            <h1 class="section-title mb-1" data-i18n="inv.title">Digital Invoices</h1>
+            <p class="text-muted mb-0" id="invoiceContext" data-i18n="inv.contextMine">Invoices for your orders, newest first</p>
         </div>
-        <button type="button" class="btn btn-secondary" id="invoiceDownloadBtn" disabled>Print / Save PDF</button>
+        <button type="button" class="btn btn-secondary" id="invoiceDownloadBtn" disabled data-i18n="inv.download">Print / Save PDF</button>
     </div>
 
     <div class="alert alert-info mb-4" data-admin-only hidden>
-        <strong>Admin view.</strong> You are seeing every invoice on the platform, newest first. Deleting an invoice is permanent.
+        <strong data-i18n="inv.adminTitle">Admin view.</strong> <span data-i18n="inv.adminText">You are seeing every invoice on the platform, newest first. Deleting an invoice is permanent.</span>
     </div>
 
     <div id="invoiceList" class="card">
         <div class="card-header">
-            <h2 class="card-title">Invoices</h2>
+            <h2 class="card-title" data-i18n="inv.list">Invoices</h2>
             <span class="badge badge-info" id="invoiceCount">0</span>
         </div>
         <div id="invoiceItems">
-            <div class="empty-state">No invoices yet. Complete an order to generate one.</div>
+            <div class="empty-state" data-i18n="inv.empty">No invoices yet. Complete an order to generate one.</div>
         </div>
         <div class="card-footer flex flex-wrap items-center justify-between gap-3" data-admin-only hidden>
             <span class="text-muted" id="invoicesPageInfo" style="font-size: 0.8rem;"></span>
             <div class="flex items-center gap-2">
-                <button type="button" class="btn btn-secondary btn-sm" id="invoicesPrevPage">Prev</button>
-                <button type="button" class="btn btn-secondary btn-sm" id="invoicesNextPage">Next</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="invoicesPrevPage" data-i18n="inv.prev">Prev</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="invoicesNextPage" data-i18n="inv.next">Next</button>
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
     <div id="invoiceDetail" class="card mt-6 hidden">
         <div class="card-header flex items-center justify-between gap-3">
             <h2 class="card-title mb-0">Invoice <span id="detailInvoiceNumber" class="font-mono text-muted"></span></h2>
-            <button type="button" class="btn btn-primary btn-sm" id="printInvoiceBtn">Print / Save PDF</button>
+            <button type="button" class="btn btn-primary btn-sm" id="printInvoiceBtn" data-i18n="inv.download">Print / Save PDF</button>
         </div>
         <div id="detailInvoiceBody" class="p-4"></div>
     </div>
@@ -60,7 +60,7 @@
             <div class="flex items-center gap-3">
                 <span class="font-semibold invoice-total"></span>
                 <span class="badge invoice-status"></span>
-                <button type="button" class="btn btn-ghost btn-sm text-danger" data-invoice-delete title="Delete invoice" aria-label="Delete invoice">Delete</button>
+                <button type="button" class="btn btn-ghost btn-sm text-danger" data-invoice-delete data-i18n="usr.delete" data-i18n-title="usr.delete" data-i18n-aria="usr.delete" title="Delete invoice" aria-label="Delete invoice">Delete</button>
             </div>
         </div>
     </template>

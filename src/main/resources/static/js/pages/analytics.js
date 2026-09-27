@@ -23,11 +23,17 @@ window.Pages.analytics = {
         this.restoreWindow();
         this.bind();
         this.load();
+        if (!this._langBound) {
+            this._langBound = true;
+            document.addEventListener("langchange", () => {
+                if (this.container && this.container.isConnected) this.renderWindowLabel();
+            });
+        }
     },
 
     deny() {
         this.container.innerHTML =
-            '<div class="empty-state">Insights are available to administrators only.</div>';
+            `<div class="empty-state">${window.t ? t("an.deny") : "Insights are available to administrators only."}</div>`;
     },
 
     restoreWindow() {
@@ -61,15 +67,25 @@ window.Pages.analytics = {
         }
     },
 
+    renderWindowLabel() {
+        const label = this.container && this.container.querySelector("#analyticsWindowLabel");
+        if (!label) return;
+        const months = window.I18n && I18n.getLang() === "bn"
+            ? String(this.months).replace(/[0-9]/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)])
+            : String(this.months);
+        label.textContent = window.t
+            ? (I18n.getLang() === "bn"
+                ? `গত ${months} মাসের প্ল্যাটফর্ম কর্মক্ষমতা`
+                : `Platform performance over the last ${months} months`)
+            : `Platform performance over the last ${this.months} months`;
+    },
+
     async load() {
         const stats = this.container.querySelector("#analyticsStats");
         const charts = this.container.querySelector("#analyticsCharts");
         const attention = this.container.querySelector("#analyticsAttention");
-        const label = this.container.querySelector("#analyticsWindowLabel");
 
-        if (label) {
-            label.textContent = `Platform performance over the last ${this.months} months`;
-        }
+        this.renderWindowLabel();
 
         stats.innerHTML = new Array(4)
             .fill('<div class="stat-card"><div class="skeleton skeleton-card"></div></div>')

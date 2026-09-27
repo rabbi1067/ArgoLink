@@ -15,17 +15,17 @@ window.WeatherWidget = (function () {
     const shell = (prefix) => `
         <div class="wx-head">
             <div class="wx-head-title">
-                <p class="section-eyebrow weather-widget-title">Weather today</p>
+                <p class="section-eyebrow weather-widget-title">${window.t ? t("wx.todayTitle") : "Weather today"}</p>
                 <p class="wx-place" id="${prefix}-weather-place"></p>
             </div>
             <div class="wx-widget-actions">
-                <label class="sr-only" for="${prefix}-district-select">District</label>
-                <select id="${prefix}-district-select" class="select wx-select" aria-label="District" hidden></select>
-                <a href="#weather" class="btn btn-ghost btn-sm">7-day forecast →</a>
+                <label class="sr-only" for="${prefix}-district-select">${window.t ? t("wx.district") : "District"}</label>
+                <select id="${prefix}-district-select" class="select wx-select" aria-label="${window.t ? t("wx.district") : "District"}" hidden></select>
+                <a href="#weather" class="btn btn-ghost btn-sm">${window.t ? t("wx.fullForecast") : "7-day forecast"} →</a>
             </div>
         </div>
         <div id="${prefix}-weather-body" class="wx-body">
-            <div class="empty-state">Loading weather...</div>
+            <div class="empty-state">${window.t ? t("wx.loadingWx") : "Loading weather..."}</div>
         </div>`;
 
     const render = (body, d, placeEl) => {
@@ -43,20 +43,21 @@ window.WeatherWidget = (function () {
         }
 
         const num = (v) => v !== null && v !== undefined && !Number.isNaN(Number(v));
+        const L = (en, key) => (window.t ? t(key) : en);
         const stats = [
-            num(today.rainSumMm) ? ["Rain", `${U.fmt(today.rainSumMm)} mm`] : null,
-            num(wind) ? ["Wind", `${U.fmt(wind, 0)} km/h`] : null,
-            num(cur.humidity) ? ["Humidity", `${U.fmt(cur.humidity, 0)}%`] : null,
-            num(cur.feelsLikeC) ? ["Feels like", `${U.fmt(cur.feelsLikeC)}°`] : null,
-            num(cur.windGustKmh) ? ["Gusts", `${U.fmt(cur.windGustKmh, 0)} km/h`] : null,
-            num(cur.pressureHpa) ? ["Pressure", `${U.fmt(cur.pressureHpa, 0)} hPa`] : null,
+            num(today.rainSumMm) ? [L("Rain", "wx.rain"), `${U.fmt(today.rainSumMm)} mm`] : null,
+            num(wind) ? [L("Wind", "wx.wind"), `${U.fmt(wind, 0)} km/h`] : null,
+            num(cur.humidity) ? [L("Humidity", "wx.humidity"), `${U.fmt(cur.humidity, 0)}%`] : null,
+            num(cur.feelsLikeC) ? [L("Feels like", "wx.feelsLike"), `${U.fmt(cur.feelsLikeC)} C`] : null,
+            num(cur.windGustKmh) ? [L("Gusts", "wx.gusts"), `${U.fmt(cur.windGustKmh, 0)} km/h`] : null,
+            num(cur.pressureHpa) ? [L("Pressure", "wx.pressure"), `${U.fmt(cur.pressureHpa, 0)} hPa`] : null,
         ].filter(Boolean).slice(0, 6);
 
         body.innerHTML = `
             <div class="wx-hero">
                 <span class="wx-hero-icon" aria-hidden="true">${U.icon(code, cur.day)}</span>
                 <div>
-                    <div class="wx-hero-temp">${U.fmt(cur.temperatureC)}°C</div>
+                    <div class="wx-hero-temp">${U.fmt(cur.temperatureC)} C</div>
                     <div class="wx-hero-desc">${U.esc(desc)}</div>
                     ${badge ? `<span class="badge ${badge.cls}">${U.esc(badge.label)}</span>` : ""}
                 </div>
@@ -66,7 +67,7 @@ window.WeatherWidget = (function () {
                     <span class="wx-stat-label">${U.esc(label)}</span>
                     <span class="wx-stat-value">${U.esc(value)}</span>
                 </div>`).join("")}</div>` : ""}
-            ${d.stale ? '<p class="text-muted weather-note">Live update failed — showing the last saved forecast.</p>' : ""}`;
+            ${d.stale ? `<p class="text-muted weather-note">${U.esc(window.t ? t("wx.stale") : "Live update failed — showing the last saved forecast.")}</p>` : ""}`;
     };
 
     /**
@@ -93,7 +94,8 @@ window.WeatherWidget = (function () {
         const load = async (refresh) => {
             if (!body || !host.isConnected) return;
             const id = ++state.request;
-            body.innerHTML = '<div class="empty-state">Loading weather...</div>';
+            const T = (en, key) => (window.t ? t(key) : en);
+            body.innerHTML = `<div class="empty-state">${T("Loading weather...", "wx.loadingWx")}</div>`;
             try {
                 const url = `/weather/forecast?district=${encodeURIComponent(state.district)}&days=7`
                     + (refresh ? "&refresh=true" : "");
@@ -103,8 +105,8 @@ window.WeatherWidget = (function () {
                 if (!d || d.fallback || !d.daily || !d.daily.length) {
                     body.innerHTML = `
                         <div class="empty-state">
-                            <p class="weather-empty-text">${U.esc((d && d.disclaimer) || "Weather is unavailable right now.")}</p>
-                            <button type="button" class="btn btn-primary" data-wx-retry>Try again</button>
+                            <p class="weather-empty-text">${U.esc((d && d.disclaimer) || T("Weather is unavailable right now.", "wx.unavailable"))}</p>
+                            <button type="button" class="btn btn-primary" data-wx-retry>${T("Try again", "wx.tryAgain")}</button>
                         </div>`;
                     const retry = body.querySelector("[data-wx-retry]");
                     if (retry) retry.addEventListener("click", () => load(true));
@@ -115,8 +117,8 @@ window.WeatherWidget = (function () {
                 if (id !== state.request) return;
                 body.innerHTML = `
                     <div class="empty-state">
-                        <p class="weather-empty-text">Weather is unavailable right now.</p>
-                        <button type="button" class="btn btn-primary" data-wx-retry>Try again</button>
+                        <p class="weather-empty-text">${T("Weather is unavailable right now.", "wx.unavailable")}</p>
+                        <button type="button" class="btn btn-primary" data-wx-retry>${T("Try again", "wx.tryAgain")}</button>
                     </div>`;
                 const retry = body.querySelector("[data-wx-retry]");
                 if (retry) retry.addEventListener("click", () => load(true));
@@ -157,6 +159,21 @@ window.WeatherWidget = (function () {
             load();
         };
         window.addEventListener(U.EVT, state.onDistrict);
+        if (!host.dataset.wxLangBound) {
+            host.dataset.wxLangBound = "1";
+            document.addEventListener("langchange", () => {
+                if (!host.isConnected || !window.t) return;
+                const title = host.querySelector(".weather-widget-title");
+                if (title) title.textContent = t("wx.todayTitle");
+                const link = host.querySelector(".wx-widget-actions a");
+                if (link) link.innerHTML = `${t("wx.fullForecast")} →`;
+                const districtLabel = host.querySelector('label[for$="-district-select"]');
+                if (districtLabel) districtLabel.textContent = t("wx.district");
+                const select = host.querySelector(".wx-select");
+                if (select) select.setAttribute("aria-label", t("wx.district"));
+                load();
+            });
+        }
 
         return state;
     };

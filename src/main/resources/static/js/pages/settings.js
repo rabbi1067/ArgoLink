@@ -22,7 +22,7 @@ window.Pages.settings = {
             this.setValue("#settingsLocation", profile.location);
             this.renderAvatar(profile.profileImageUrl, profile.name);
         } catch (error) {
-            if (window.Toast) Toast.fromResponse(error, "Could not load profile");
+            if (window.Toast) Toast.fromResponse(error, window.t ? t("set.loadFail") : "Could not load profile");
         }
     },
 
@@ -114,7 +114,7 @@ window.Pages.settings = {
             this.renderAvatar(profile.profileImageUrl, profile.name);
             this.syncFreshProfile(profile);
             this.syncShell(profile);
-            if (window.Toast) Toast.success("Profile photo updated");
+            if (window.Toast) Toast.success(window.t ? t("set.photoUpdated") : "Profile photo updated");
         } catch (uploadError) {
             if (imgEl) {
                 imgEl.removeAttribute("src");
@@ -123,7 +123,7 @@ window.Pages.settings = {
                 const name = stored && stored.name ? stored.name : "";
                 this.showInitials(initialsEl, name);
             }
-            if (window.Toast) Toast.fromResponse(uploadError, "Could not upload photo");
+            if (window.Toast) Toast.fromResponse(uploadError, window.t ? t("set.uploadFail") : "Could not upload photo");
         } finally {
             this.resetAvatarInput();
         }
@@ -132,10 +132,10 @@ window.Pages.settings = {
     validateAvatar(file) {
         const allowed = ["image/jpeg", "image/png", "image/webp"];
         if (!allowed.includes(file.type)) {
-            return "Only JPEG, PNG and WebP images are allowed";
+            return window.t ? t("set.avatarType") : "Only JPEG, PNG and WebP images are allowed";
         }
         if (file.size > 5 * 1024 * 1024) {
-            return "Avatar must be 5 MB or smaller";
+            return window.t ? t("set.avatarSize") : "Avatar must be 5 MB or smaller";
         }
         return null;
     },
@@ -161,7 +161,7 @@ window.Pages.settings = {
         const location = this.value("#settingsLocation").trim();
 
         if (!name || name.length < 2) {
-            if (window.Toast) Toast.error("Name must be at least 2 characters");
+            if (window.Toast) Toast.error(window.t ? t("set.nameShort") : "Name must be at least 2 characters");
             return;
         }
 
@@ -169,7 +169,7 @@ window.Pages.settings = {
         const original = submit ? submit.textContent : "";
         if (submit) {
             submit.disabled = true;
-            submit.textContent = "Saving...";
+            submit.textContent = window.t ? t("set.saving") : "Saving...";
         }
 
         try {
@@ -182,9 +182,9 @@ window.Pages.settings = {
             this.setValue("#settingsName", updated.name || name);
             this.syncFreshProfile(updated);
             this.syncShell(updated);
-            if (window.Toast) Toast.success("Profile updated");
+            if (window.Toast) Toast.success(window.t ? t("set.saved") : "Profile updated");
         } catch (error) {
-            if (window.Toast) Toast.fromResponse(error, "Could not update profile");
+            if (window.Toast) Toast.fromResponse(error, window.t ? t("set.updateFail") : "Could not update profile");
         } finally {
             if (submit) {
                 submit.disabled = false;
@@ -231,19 +231,19 @@ window.Pages.settings = {
         const newPassword = this.value("#settingsNewPassword");
 
         if (!currentPassword) {
-            if (window.Toast) Toast.error("Current password is required");
+            if (window.Toast) Toast.error(window.t ? t("set.curRequired") : "Current password is required");
             return;
         }
         if (!newPassword || newPassword.length < 8) {
-            if (window.Toast) Toast.error("New password must be at least 8 characters");
+            if (window.Toast) Toast.error(window.t ? t("set.newShort") : "New password must be at least 8 characters");
             return;
         }
         if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
-            if (window.Toast) Toast.error("New password must include an uppercase letter, a lowercase letter and a number");
+            if (window.Toast) Toast.error(window.t ? t("set.newWeak") : "New password must include an uppercase letter, a lowercase letter and a number");
             return;
         }
         if (currentPassword === newPassword) {
-            if (window.Toast) Toast.error("New password must be different from the current one");
+            if (window.Toast) Toast.error(window.t ? t("set.newSame") : "New password must be different from the current one");
             return;
         }
 
@@ -251,15 +251,15 @@ window.Pages.settings = {
         const original = submit ? submit.textContent : "";
         if (submit) {
             submit.disabled = true;
-            submit.textContent = "Updating...";
+            submit.textContent = window.t ? t("set.updating") : "Updating...";
         }
 
         try {
             await Api.post("/users/change-password", { currentPassword, newPassword });
-            if (window.Toast) Toast.success("Password changed");
+            if (window.Toast) Toast.success(window.t ? t("set.pwChanged") : "Password changed");
             form.reset();
         } catch (error) {
-            if (window.Toast) Toast.fromResponse(error, "Could not change password");
+            if (window.Toast) Toast.fromResponse(error, window.t ? t("set.pwFail") : "Could not change password");
         } finally {
             if (submit) {
                 submit.disabled = false;
@@ -277,7 +277,7 @@ window.Pages.settings = {
                 const show = target.type === "password";
                 target.type = show ? "text" : "password";
                 button.setAttribute("aria-pressed", String(show));
-                button.setAttribute("aria-label", show ? "Hide password" : "Show password");
+                button.setAttribute("aria-label", show ? t("auth.hidePassword") : t("auth.showPassword"));
                 const showIcon = button.querySelector(".pw-show");
                 const hideIcon = button.querySelector(".pw-hide");
                 if (showIcon) showIcon.classList.toggle("hidden", show);
