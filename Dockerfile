@@ -10,9 +10,13 @@ COPY src ./src
 RUN mvn -q package -DskipTests
 
 FROM eclipse-temurin:25-jre-noble
+# Slim images can miss the CA bundle (HTTPS to Open-Meteo/Cloudinary fails);
+# IPv4 is forced because some shared hosts have broken IPv6 egress.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/target/agrolink-*.jar app.jar
 EXPOSE 8080
 # Render injects $PORT; Spring takes it explicitly so SERVER_PORT never matters.
 # -Xmx300m keeps heap + metaspace + native inside the 512 MB free box.
-CMD ["sh", "-c", "java -Xmx300m -Xss512k $JAVA_OPTS -jar app.jar --server.port=$PORT"]
+CMD ["sh", "-c", "java -Xmx300m -Xss512k -Djava.net.preferIPv4Stack=true $JAVA_OPTS -jar app.jar --server.port=$PORT"]

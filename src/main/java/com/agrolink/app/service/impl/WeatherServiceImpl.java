@@ -54,6 +54,14 @@ public class WeatherServiceImpl implements WeatherService {
     private final Map<String, WeatherForecastDTO> lastGood = new ConcurrentHashMap<>();
     private final Map<String, Instant> lastRefresh = new ConcurrentHashMap<>();
     private final Map<String, Object> locks = new ConcurrentHashMap<>();
+    /**
+     * Open-Meteo rate-limits shared IPs (HTTP 429 — exactly what a free host
+     * like Render hits). While a district is blocked here, no upstream call
+     * is attempted at all: the last good forecast (stale) or the honest
+     * unavailable state is served instead of hammering the quota.
+     */
+    private final Map<String, Instant> rateLimitedUntil = new ConcurrentHashMap<>();
+    private static final Duration RATE_LIMIT_COOLDOWN = Duration.ofMinutes(5);
 
     // ------------------------------------------------------------------ public API
 
@@ -114,6 +122,11 @@ public class WeatherServiceImpl implements WeatherService {
                     return hit;
                 }
             }
+            Instant blocked = rateLimitedUntil.get(name);
+            if (blocked != null && Instant.now().isBefore(blocked)) {
+                WeatherForecastDTO old = lastGood.get(name);
+                return old != null ? asStale(old) : unavailable(name);
+            }
             WeatherForecastDTO live = fetchLive(name);
             if (live != null) {
                 if (cache != null) {
@@ -144,6 +157,12 @@ public class WeatherServiceImpl implements WeatherService {
             HttpResponse<String> resp = httpClient.send(
                     HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(15)).GET().build(),
                     HttpResponse.BodyHandlers.ofString());
+            if (resp.statusCode() == 429) {
+                rateLimitedUntil.put(name, Instant.now().plus(RATE_LIMIT_COOLDOWN));
+                log.warn("Open-Meteo rate limit (429) for {} - backing off for {} minutes",
+                        name, RATE_LIMIT_COOLDOWN.toMinutes());
+                return null;
+            }
             if (resp.statusCode() != 200) {
                 log.warn("Open-Meteo returned HTTP {} for {}", resp.statusCode(), name);
                 return null;
