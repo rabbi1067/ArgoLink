@@ -1,0 +1,29 @@
+<section class="page">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="section-eyebrow">Insights</p>
+            <h1 class="section-title mb-0">Analytics</h1>
+            <p class="section-subtitle mb-0" id="analyticsWindowLabel">Platform performance</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+            <label class="sr-only" for="analyticsMonths">Reporting window</label>
+            <select id="analyticsMonths" class="select" aria-label="Reporting window">
+                <option value="3">Last 3 months</option>
+                <option value="6" selected>Last 6 months</option>
+                <option value="12">Last 12 months</option>
+                <option value="24">Last 24 months</option>
+            </select>
+            <button type="button" class="btn btn-secondary btn-sm" data-analytics-refresh>Refresh</button>
+        </div>
+    </div>
+
+    <section class="attention" id="analyticsAttention" hidden aria-label="Needs your attention"></section>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 dashboard-card-grid" id="analyticsStats"></div>
+
+    <div class="section-heading" id="analytics-charts-heading" hidden>
+        <h2 class="section-title">Charts</h2>
+        <p class="section-subtitle">Every series is grouped by the month the record was created.</p>
+    </div>
+    <div class="grid grid-cols-1" id="analyticsCharts"></div>
+</section>

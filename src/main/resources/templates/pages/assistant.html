@@ -1,0 +1,28 @@
+<section class="page" data-page="assistant">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="section-eyebrow">AI Assistant</p>
+            <h1 class="section-title mb-1">AgroLink Assistant</h1>
+            <p class="text-muted mb-0">Rule-based guidance for produce, orders and platform usage.</p>
+        </div>
+        <button type="button" class="btn btn-secondary" id="assistantResetBtn">New Chat</button>
+    </div>
+
+    <div class="card">
+        <div id="assistantMessages" class="mb-4" style="max-height: 24rem; overflow-y: auto;">
+            <div class="empty-state">Ask me about crops, orders, or how to use AgroLink.</div>
+        </div>
+        <form id="assistantForm" class="flex gap-3">
+            <label class="sr-only" for="assistantInput">Ask a question</label>
+            <input id="assistantInput" type="text" class="form-input flex-1" placeholder="e.g. How do I confirm an order?" autocomplete="off" />
+            <button type="submit" class="btn btn-primary">Ask</button>
+        </form>
+        <p class="text-muted mt-3 mb-0" id="assistantDisclaimer" style="font-size: 0.75rem;"></p>
+    </div>
+
+    <template id="assistantMsgTpl">
+        <div class="chat-bubble mb-3 p-3 rounded" style="max-width: 85%;">
+            <p class="mb-0 assistant-text"></p>
+        </div>
+    </template>
+</section>

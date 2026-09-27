@@ -1,0 +1,39 @@
+# Render Blueprint for AgroLink (free tier).
+# Deploy: Render dashboard -> New -> Blueprint -> connect this repo.
+# Then fill the sync:false values below in the dashboard (never commit secrets).
+services:
+  - type: web
+    name: agrolink
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # Provided automatically by Render; the Dockerfile wires it to Spring.
+      - key: PORT
+        value: 10000
+      # Atlas: also whitelist 0.0.0.0/0 under Network Access, or Render
+      # cannot reach the database at all.
+      - key: MONGODB_URI
+        sync: false
+      # Long random string. Generate one: openssl rand -base64 64
+      - key: JWT_SECRET
+        sync: false
+      # Same Gmail/EmailJS keys as local development (optional but needed
+      # for forgot-password emails).
+      - key: EMAILJS_SERVICE_ID
+        sync: false
+      - key: EMAILJS_TEMPLATE_ID
+        sync: false
+      - key: EMAILJS_PUBLIC_KEY
+        sync: false
+      - key: EMAILJS_PRIVATE_KEY
+        sync: false
+      # Public demo logins (super-admin included, read-only). Set false if
+      # strangers must not browse the project.
+      - key: AGROLINK_DEMO_ENABLED
+        value: true
+      # Frontend is served by this same app (same origin), so CORS stays
+      # untouched. Only change if a separate frontend domain is added later.
+      # - key: CORS_ALLOWED_ORIGINS
+      #   sync: false

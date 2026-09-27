@@ -1,0 +1,397 @@
+/* ------------------------------------------------------------------
+ * dashboard-pro.css - professional skin for the three dashboards.
+ * Loaded after main.css; only adds dashboard rules, never overrides
+ * global utilities. Colours come from the same CSS variables the
+ * charts read, so day/night theme keeps working.
+ * ------------------------------------------------------------------ */
+
+/* ---------------- stat cards ---------------- */
+
+.pro-card {
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.pro-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.55rem;
+}
+
+.pro-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 10px;
+    font-size: 1.15rem;
+    background: #eef2ff;
+}
+
+.pro-card.tone-success .pro-icon { background: #dcfce7; }
+.pro-card.tone-warning .pro-icon { background: #fef3c7; }
+.pro-card.tone-error .pro-icon,
+.pro-card.tone-danger .pro-icon { background: #fee2e2; }
+.pro-card.tone-info .pro-icon { background: #e0f2fe; }
+.pro-card.tone-neutral .pro-icon { background: #f1f5f9; }
+
+.pro-label {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-muted, #64748b);
+}
+
+.pro-value {
+    margin: 0.15rem 0 0.4rem;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--color-text, #0f172a);
+    line-height: 1.15;
+}
+
+.pro-sub {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    min-height: 1.4rem;
+}
+
+.pro-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.pro-pill.trend-up { background: #dcfce7; color: #15803d; }
+.pro-pill.trend-down { background: #fee2e2; color: #b91c1c; }
+.pro-pill.trend-flat { background: #f1f5f9; color: #64748b; }
+
+.pro-caption {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #64748b);
+}
+
+/* Five cards share one row on wide screens, so their values step down a size. */
+@media (min-width: 1280px) {
+    .dashboard-card-grid.xl\:grid-cols-5 .pro-value {
+        font-size: 1.35rem;
+    }
+    .dashboard-card-grid.xl\:grid-cols-5 .pro-card {
+        padding: 1rem;
+    }
+}
+
+/* ---------------- analytics: compact 2-row cards, dense charts ---------------- */
+
+.grid.analytics-card-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+@media (max-width: 1280px) {
+    .grid.analytics-card-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.pro-card.pro-compact {
+    padding: 0.85rem 0.95rem;
+    border-radius: 12px;
+}
+
+.pro-card.pro-compact .pro-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+}
+
+.pro-card.pro-compact .pro-label {
+    font-size: 0.72rem;
+}
+
+.pro-card.pro-compact .pro-value {
+    font-size: 1.3rem;
+    margin: 0.1rem 0 0.3rem;
+}
+
+.pro-card.pro-compact .pro-sub {
+    min-height: 1.2rem;
+}
+
+.pro-card.pro-compact .pro-pill {
+    font-size: 0.68rem;
+}
+
+.pro-card.pro-compact .pro-caption {
+    font-size: 0.68rem;
+}
+
+.chart-grid-compact {
+    gap: 0.9rem;
+}
+
+.chart-grid-compact .chart-card {
+    padding: 1rem 1.1rem;
+}
+
+.chart-grid-compact .chart-card .card-title {
+    font-size: 0.95rem;
+}
+
+/* ---------------- chart grid: hero + side rail ---------------- */
+
+.grid.dashboard-chart-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.chart-card-wide { grid-column: span 8; }
+.chart-card-side { grid-column: span 4; }
+.chart-card-full { grid-column: span 12; }
+
+@media (max-width: 1024px) {
+    .chart-card-wide,
+    .chart-card-side,
+    .chart-card-full { grid-column: span 12; }
+}
+
+.chart-card {
+    padding: 1.25rem;
+}
+
+.chart-card .card-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+.chart-subtitle {
+    margin: 0.15rem 0 0;
+    font-size: 0.82rem;
+    color: var(--color-text-muted, #64748b);
+}
+
+.chart-body {
+    position: relative;
+    margin-top: 0.75rem;
+}
+
+/* ---------------- tables ---------------- */
+
+.pro-table {
+    padding: 1.25rem;
+}
+
+.pro-table .card-header {
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.table-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+}
+
+.table-toolbar .input {
+    max-width: 240px;
+}
+
+.table-count {
+    font-size: 0.78rem;
+    color: var(--color-text-muted, #64748b);
+    white-space: nowrap;
+}
+
+.pro-table .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+}
+
+.pro-table thead th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-text-muted, #64748b);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+    white-space: nowrap;
+}
+
+.pro-table tbody td {
+    padding: 0.65rem 0.75rem;
+    border-top: 1px solid var(--color-border, #e2e8f0);
+    color: var(--color-text, #0f172a);
+    vertical-align: middle;
+}
+
+.pro-table tbody tr:first-child td {
+    border-top: none;
+}
+
+.pro-table tbody tr[data-row-route] {
+    cursor: pointer;
+}
+
+.pro-table tbody tr[data-row-route]:hover td {
+    background: rgba(16, 185, 129, 0.06);
+}
+
+.table-note {
+    margin: 0.6rem 0 0;
+    font-size: 0.78rem;
+    color: var(--color-text-muted, #64748b);
+}
+
+.pro-viewmore {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-brand-600, #059669);
+    cursor: pointer;
+}
+
+.pro-viewmore:hover {
+    text-decoration: underline;
+}
+
+.align-right { text-align: right; }
+.align-center { text-align: center; }
+
+/* ---------------- weather widget (compact strip, breathing room below) ---------------- */
+
+.weather-widget {
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.wx-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.wx-head .section-eyebrow {
+    margin: 0;
+}
+
+.wx-place {
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text, #0f172a);
+}
+
+.wx-widget-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+}
+
+.wx-select {
+    max-width: 170px;
+}
+
+.wx-body {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.85rem;
+}
+
+.wx-body .empty-state {
+    padding: 0.5rem 0;
+}
+
+.wx-hero {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.wx-hero-icon {
+    font-size: 2.6rem;
+    line-height: 1;
+}
+
+.wx-hero-temp {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--color-text, #0f172a);
+    line-height: 1.1;
+}
+
+.wx-hero-desc {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text, #0f172a);
+    margin: 0.1rem 0 0.3rem;
+}
+
+.wx-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem 1.5rem;
+    flex: 1 1 320px;
+}
+
+.wx-stat {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.wx-stat-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-text-muted, #64748b);
+}
+
+.wx-stat-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text, #0f172a);
+}
+
+.weather-note {
+    margin: 0;
+    font-size: 0.78rem;
+    flex-basis: 100%;
+}
+
+@media (max-width: 640px) {
+    .wx-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

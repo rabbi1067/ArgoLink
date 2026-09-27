@@ -1,0 +1,158 @@
+<style>
+    /* Scrollbars stay fully functional (mouse-wheel, drag, touch) - only the visible track/thumb is hidden. */
+    #usersTableWrap .table-scroll {
+        scrollbar-width: none;       /* Firefox */
+        -ms-overflow-style: none;    /* old Edge/IE */
+    }
+    #usersTableWrap .table-scroll::-webkit-scrollbar {
+        display: none;               /* Chrome, Edge, Safari */
+    }
+</style>
+<section class="page">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="section-eyebrow">Administration</p>
+            <h1 class="section-title mb-0">User Management</h1>
+            <p class="text-muted mb-0" id="usersContext"></p>
+        </div>
+        <div class="flex gap-2">
+            <button type="button" class="btn btn-danger btn-sm" id="usersBulkDeleteBtn" hidden>Delete Selected (<span id="usersSelectedCount">0</span>)</button>
+            <button type="button" class="btn btn-primary btn-sm" id="usersAddBtn">+ Create User</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-users-refresh>Refresh</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4 mb-6" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+        <div class="card">
+            <p class="text-muted mb-0" style="font-size: 0.8rem;">Total Users</p>
+            <p class="mb-0" style="font-size: 1.6rem; font-weight: 700;" id="usersStatTotal">0</p>
+        </div>
+        <div class="card">
+            <p class="text-muted mb-0" style="font-size: 0.8rem;">Total Admins</p>
+            <p class="mb-0" style="font-size: 1.6rem; font-weight: 700;" id="usersStatAdmins">0</p>
+        </div>
+        <div class="card">
+            <p class="text-muted mb-0" style="font-size: 0.8rem;">Active</p>
+            <p class="mb-0" style="font-size: 1.6rem; font-weight: 700; color: #22c55e;" id="usersStatActive">0</p>
+        </div>
+        <div class="card">
+            <p class="text-muted mb-0" style="font-size: 0.8rem;">Deactivated</p>
+            <p class="mb-0" style="font-size: 1.6rem; font-weight: 700; color: #ef4444;" id="usersStatInactive">0</p>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap gap-3 mb-6">
+        <select id="userRoleFilter" class="select" style="max-width: 220px;" aria-label="Filter by role">
+            <option value="">All roles</option>
+            <option value="FARMER">Farmers</option>
+            <option value="BUYER">Buyers</option>
+            <option value="ADMIN">Admins</option>
+            <option value="SUPER_ADMIN">Super Admins</option>
+        </select>
+        <input id="usersSearch" class="input" style="max-width: 320px;" type="search" placeholder="Search by name or email...">
+    </div>
+
+    <div class="card" id="usersCard">
+        <div class="card-header">
+            <h2 class="card-title">Users</h2>
+            <span class="badge badge-info" id="usersCount">0</span>
+        </div>
+        <div id="usersTableWrap">
+            <div class="empty-state">Loading users...</div>
+        </div>
+        <div class="flex items-center justify-center gap-4 mt-4" id="usersPagination" hidden>
+            <button type="button" class="btn btn-secondary btn-sm" id="usersPrevPage">&larr; Previous</button>
+            <span class="text-muted" id="usersPageInfo" style="font-size: 0.85rem;"></span>
+            <button type="button" class="btn btn-secondary btn-sm" id="usersNextPage">Next &rarr;</button>
+        </div>
+    </div>
+</section>
+
+<div class="modal-backdrop" id="userModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
+        <button type="button" class="modal-close" data-user-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="userModalTitle">Create User</h2>
+        <form id="userForm" novalidate>
+            <div class="field">
+                <label for="userName">Full name</label>
+                <input id="userName" class="input" type="text" name="name" placeholder="e.g. Ashok Kumar" required>
+            </div>
+            <div class="field">
+                <label for="userEmail">Email</label>
+                <input id="userEmail" class="input" type="email" name="email" placeholder="user@company.com" required>
+            </div>
+            <div class="field">
+                <label for="userPassword">Password</label>
+                <input id="userPassword" class="input" type="password" name="password" placeholder="Minimum 8 characters" required minlength="8">
+            </div>
+            <div class="field">
+                <label for="userRole">Role</label>
+                <select id="userRole" class="select" name="role" required>
+                    <option value="">Select role</option>
+                    <option value="FARMER">Farmer</option>
+                    <option value="BUYER">Buyer</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="field">
+                    <label for="userPhone">Phone (optional)</label>
+                    <input id="userPhone" class="input" type="tel" name="phone" placeholder="+880-1712-345678">
+                </div>
+                <div class="field">
+                    <label for="userLocation">Location (optional)</label>
+                    <input id="userLocation" class="input" type="text" name="location" placeholder="Dhaka, Bangladesh">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Create User</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="userEditModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userEditModalTitle">
+        <button type="button" class="modal-close" data-user-edit-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="userEditModalTitle">Edit User</h2>
+        <form id="userEditForm" novalidate>
+            <input type="hidden" id="userEditId">
+            <div class="field">
+                <label for="userEditName">Full name</label>
+                <input id="userEditName" class="input" type="text" name="name" required minlength="2">
+            </div>
+            <div class="field">
+                <label for="userEditEmail">Email</label>
+                <input id="userEditEmail" class="input" type="email" disabled title="Email cannot be changed">
+            </div>
+            <div class="field" id="userEditRoleField" hidden>
+                <label for="userEditRole">Role</label>
+                <select id="userEditRole" class="select" name="role">
+                    <option value="FARMER">Farmer</option>
+                    <option value="BUYER">Buyer</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="field">
+                    <label for="userEditPhone">Phone (optional)</label>
+                    <input id="userEditPhone" class="input" type="tel" name="phone">
+                </div>
+                <div class="field">
+                    <label for="userEditLocation">Location (optional)</label>
+                    <input id="userEditLocation" class="input" type="text" name="location">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="userConfirmModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="userConfirmTitle" style="max-width: 380px;">
+        <h2 class="modal-title" id="userConfirmTitle">Please confirm</h2>
+        <p class="text-muted" id="userConfirmMessage">Are you sure?</p>
+        <div class="flex gap-2 justify-end mt-4">
+            <button type="button" class="btn btn-secondary btn-sm" id="userConfirmCancelBtn">Cancel</button>
+            <button type="button" class="btn btn-danger btn-sm" id="userConfirmOkBtn">Confirm</button>
+        </div>
+    </div>
+</div>

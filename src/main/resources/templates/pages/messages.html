@@ -1,0 +1,60 @@
+<section class="page" data-page="messages">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="section-eyebrow">Messaging</p>
+            <h1 class="section-title mb-1">Conversations</h1>
+            <p class="text-muted mb-0">Chat with buyers &amp; farmers about your orders.</p>
+        </div>
+        <a href="#" class="btn btn-outline btn-sm" data-route="orders">← Back to Orders</a>
+    </div>
+
+    <div class="alert alert-info mb-4" data-admin-only hidden>
+        <strong>Admin moderation view.</strong> Every conversation on the platform, newest first. Threads are read-only here and can be deleted permanently.
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0" style="min-height: 26rem;">
+        <div class="card" style="border-right: none;">
+            <div class="card-header">
+                <h2 class="card-title" id="convListTitle">Threads</h2>
+                <span class="badge badge-info" id="convUnread">0</span>
+            </div>
+            <div id="convList" style="max-height: 20rem; overflow-y: auto;">
+                <div class="empty-state" id="convLoading">Loading conversations...</div>
+            </div>
+            <div class="card-footer flex flex-wrap items-center justify-between gap-2" data-admin-only hidden>
+                <span class="text-muted" id="convsPageInfo" style="font-size: 0.75rem;"></span>
+                <div class="flex items-center gap-2">
+                    <button type="button" class="btn btn-secondary btn-sm" id="convsPrevPage">Prev</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="convsNextPage">Next</button>
+                </div>
+            </div>
+        </div>
+        <div class="card md:col-span-2">
+            <div id="convThread" class="d-flex flex-column" style="height: 100%;">
+                <div id="convOpen" class="empty-state">Select a conversation to view messages.</div>
+            </div>
+            <div id="convComposer" class="p-3 hidden" style="border-top: 1px solid var(--color-border);">
+                <form id="chatForm" class="flex items-center gap-2">
+                    <input id="chatInput" class="input flex-1" type="text" maxlength="2000" placeholder="Type a message…" autocomplete="off">
+                    <button type="submit" class="btn btn-primary btn-sm">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <template id="convListItemTpl">
+        <a href="#" class="conv-item d-block p-3" style="border-bottom: 1px solid var(--color-border);">
+            <p class="font-semibold mb-0 conv-name"></p>
+            <p class="text-muted mb-0" style="font-size: 0.75rem;"> conv-preview</p>
+        </a>
+    </template>
+
+    <template id="msgBubbleTpl">
+        <div class="msg-row mb-2 d-flex">
+            <div class="msg-bubble p-2 rounded" style="max-width: 80%;">
+                <p class="mb-0 msg-text"></p>
+                <small class="text-muted msg-time"></small>
+            </div>
+        </div>
+    </template>
+</section>

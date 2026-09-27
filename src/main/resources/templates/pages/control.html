@@ -1,0 +1,42 @@
+<section class="page dashboard-page" data-dashboard-view="CONTROL">
+    <div class="dashboard-header">
+        <div>
+            <p class="section-eyebrow">Control Center</p>
+            <h1 class="section-title">Platform control center</h1>
+            <p class="text-muted">Governance, access and money movement across every region.</p>
+        </div>
+        <div class="dashboard-header-actions">
+            <span class="badge badge-info" id="control-scope" hidden></span>
+            <button type="button" class="btn btn-secondary btn-sm" data-control-csv>Export CSV</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-control-refresh>Refresh</button>
+        </div>
+    </div>
+
+    <div class="dashboard-section" id="control-weather"></div>
+
+    <section class="attention" id="control-attention" hidden aria-label="Needs your attention"></section>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 dashboard-card-grid" id="control-stats"></div>
+
+    <div class="card dashboard-health" id="control-health-heading" hidden>
+        <div id="control-health"></div>
+    </div>
+
+    <div class="section-heading" id="control-trends-heading" hidden>
+        <h2 class="section-title">Platform trends</h2>
+        <p class="section-subtitle">Revenue, account growth and where the trade happens.</p>
+    </div>
+    <div class="grid grid-cols-1" id="control-charts"></div>
+
+    <div class="section-heading" id="control-tables-heading" hidden>
+        <h2 class="section-title">Governance tables</h2>
+        <p class="section-subtitle">Latest 5 shown, View more opens the full page.</p>
+    </div>
+    <div class="grid grid-cols-1" id="control-tables"></div>
+
+    <div class="section-heading">
+        <h2 class="section-title">Recent activity</h2>
+        <p class="section-subtitle" id="control-activity-count"></p>
+    </div>
+    <div class="card" id="control-activity"></div>
+</section>

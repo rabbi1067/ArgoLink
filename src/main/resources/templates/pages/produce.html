@@ -1,0 +1,184 @@
+<style>
+    .pd-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.75rem; margin-bottom: 0.75rem; }
+    .pd-filters [hidden] { display: none !important; }
+    .pd-filters .pd-search { grid-column: span 2; }
+    @media (max-width: 640px) { .pd-filters .pd-search { grid-column: span 1; } }
+    .pd-summary { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; margin-bottom: 1rem; }
+    .pd-summary[hidden] { display: none; }
+    .pd-chip { padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; background: rgba(5, 150, 105, 0.12); color: #059669; }
+
+    .pd-card { display: flex; flex-direction: column; overflow: hidden; }
+    .pd-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 0.75rem; background: linear-gradient(135deg, #064e3b, #059669); margin-bottom: 0.9rem; }
+    .pd-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pd-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2.75rem; }
+    .pd-price { position: absolute; left: 0.6rem; bottom: 0.6rem; padding: 0.25rem 0.65rem; border-radius: 999px; background: #059669; color: #ffffff; font-size: 0.85rem; font-weight: 700; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+    .pd-status { position: absolute; right: 0.6rem; top: 0.6rem; }
+    .pd-meta { font-size: 0.8rem; margin: 0 0 0.25rem; }
+    .pd-desc { font-size: 0.85rem; margin: 0.25rem 0 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .pd-pager { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+    .pd-pager[hidden] { display: none; }
+
+    .pd-skel-block { background: rgba(148, 163, 184, 0.25); }
+    .pd-skel-line { height: 0.8rem; border-radius: 0.4rem; background: rgba(148, 163, 184, 0.25); margin: 0.6rem 0; }
+    .pd-skel-block, .pd-skel-line { animation: pd-pulse 1.4s ease-in-out infinite; }
+    @keyframes pd-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    @media (prefers-reduced-motion: reduce) { .pd-skel-block, .pd-skel-line { animation: none; } }
+
+    .pd-upload { display: flex; flex-direction: column; gap: 0.5rem; }
+    .pd-upload-preview { aspect-ratio: 16 / 9; border-radius: 0.75rem; overflow: hidden; background: rgba(148, 163, 184, 0.15); display: none; }
+    .pd-upload-preview.has-image { display: block; }
+    .pd-upload-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .pd-upload-status { font-size: 0.8rem; min-height: 1.1rem; }
+    .pd-offer-total { font-weight: 700; }
+    textarea.input { min-height: 4.5rem; resize: vertical; }
+</style>
+
+<section class="page" data-page="produce">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="section-eyebrow">Marketplace</p>
+            <h1 class="section-title mb-0">Produce Supply</h1>
+            <p class="text-muted mb-0" id="produceContext"></p>
+        </div>
+        <div class="flex gap-2">
+            <button type="button" class="btn btn-primary btn-sm" id="produceAddBtn" hidden>+ Add Supply</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-produce-refresh>Refresh</button>
+        </div>
+    </div>
+
+    <div id="produceSummary" class="pd-summary" hidden></div>
+
+    <div class="pd-filters" role="search">
+        <input id="produceSearch" class="input pd-search" type="search" placeholder="Search crop, place or category..." aria-label="Search produce">
+        <select id="produceCategoryFilter" class="select" aria-label="Filter category">
+            <option value="">All categories</option>
+        </select>
+        <select id="produceStatusFilter" class="select" data-admin-filter hidden aria-label="Filter status">
+            <option value="">All statuses</option>
+            <option value="ACTIVE">Active</option>
+            <option value="DRAFT">Draft</option>
+            <option value="RESERVED">Reserved</option>
+            <option value="SOLD">Sold</option>
+            <option value="ARCHIVED">Archived</option>
+        </select>
+        <select id="produceDivisionFilter" class="select" data-buyer-filter aria-label="Filter division">
+            <option value="">All divisions</option>
+        </select>
+        <select id="produceDistrictFilter" class="select" data-buyer-filter aria-label="Filter district">
+            <option value="">All districts</option>
+        </select>
+        <input id="producePriceMin" class="input" type="number" min="0" step="0.01" placeholder="Min price ৳" data-buyer-filter aria-label="Minimum price">
+        <input id="producePriceMax" class="input" type="number" min="0" step="0.01" placeholder="Max price ৳" data-buyer-filter aria-label="Maximum price">
+        <select id="produceSort" class="select" data-buyer-filter aria-label="Sort by">
+            <option value="newest">Newest first</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="quantity_desc">Most stock</option>
+        </select>
+        <button type="button" class="btn btn-secondary btn-sm" id="produceClearFilters">Clear filters</button>
+    </div>
+    <p class="text-muted mb-4" id="produceCount" aria-live="polite"></p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="produceGrid" aria-live="polite">
+        <div class="empty-state">Loading produce listings...</div>
+    </div>
+
+    <nav class="pd-pager" id="producePager" aria-label="Pagination" hidden></nav>
+</section>
+
+<div class="modal-backdrop" id="produceModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="produceModalTitle" style="max-height: 92vh; overflow-y: auto;">
+        <button type="button" class="modal-close" data-produce-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="produceModalTitle">Add Supply</h2>
+        <form id="produceForm" novalidate>
+            <input type="hidden" id="produceId">
+
+            <div class="field pd-upload">
+                <label for="produceImage">Crop photo (JPEG, PNG or WebP)</label>
+                <input id="produceImage" class="input" type="file" accept="image/jpeg,image/png,image/webp">
+                <div class="pd-upload-preview" id="produceImagePreviewBox">
+                    <img id="produceImagePreview" alt="Selected crop photo preview">
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                    <span class="pd-upload-status text-muted" id="produceImageStatus" aria-live="polite"></span>
+                    <button type="button" class="btn btn-secondary btn-sm" id="produceImageRemove" hidden>Remove photo</button>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="produceCropName">Crop name</label>
+                <input id="produceCropName" class="input" type="text" name="cropName" maxlength="100" placeholder="e.g. Naogaon Aman Rice" required>
+            </div>
+            <div class="field">
+                <label for="produceCategory">Category</label>
+                <select id="produceCategory" class="select" name="category" required>
+                    <option value="">Select category</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="produceDescription">Description (optional)</label>
+                <textarea id="produceDescription" class="input" name="description" maxlength="1000" placeholder="Variety, quality, packaging..."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="field">
+                    <label for="produceQuantity">Available quantity</label>
+                    <input id="produceQuantity" class="input" type="number" name="availableQuantity" min="0.01" step="0.01" required>
+                </div>
+                <div class="field">
+                    <label for="produceUnit">Unit</label>
+                    <select id="produceUnit" class="select" name="unit" required>
+                        <option value="kg">kg</option>
+                        <option value="maund">maund (মণ)</option>
+                        <option value="quintal">quintal</option>
+                        <option value="tonne">tonne</option>
+                        <option value="litre">litre</option>
+                        <option value="bag">bag</option>
+                        <option value="dozen">dozen</option>
+                        <option value="piece">piece</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label for="producePrice">Price per unit (৳)</label>
+                <input id="producePrice" class="input" type="number" name="pricePerUnit" min="0.01" step="0.01" required>
+            </div>
+            <div class="field">
+                <label for="produceDistrict">District</label>
+                <select id="produceDistrict" class="select" name="district" required>
+                    <option value="">Select district</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="produceLocation">Area / upazila / village (optional)</label>
+                <input id="produceLocation" class="input" type="text" name="location" maxlength="120" placeholder="e.g. Manda, Naogaon">
+            </div>
+            <div class="field">
+                <label for="produceHarvestDate">Harvest date</label>
+                <input id="produceHarvestDate" class="input" type="date" name="harvestDate">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="produceSubmitBtn">Add Listing</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="offerModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="offerModalTitle">
+        <button type="button" class="modal-close" data-offer-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="offerModalTitle">Make an Offer</h2>
+        <p class="text-muted mb-4" id="offerModalListing"></p>
+        <form id="offerForm" novalidate>
+            <input type="hidden" id="offerListingId">
+            <div class="field">
+                <label for="offerQuantity">Offered quantity</label>
+                <input id="offerQuantity" class="input" type="number" name="offeredQuantity" min="0.01" step="0.01" required>
+            </div>
+            <div class="field">
+                <label for="offerPrice">Offered price per unit (৳)</label>
+                <input id="offerPrice" class="input" type="number" name="offeredPrice" min="0.01" step="0.01" required>
+            </div>
+            <p class="mb-4">Estimated total: <span class="pd-offer-total" id="offerTotal">৳0.00</span></p>
+            <button type="submit" class="btn btn-primary btn-block" id="offerSubmitBtn">Submit Offer</button>
+        </form>
+    </div>
+</div>

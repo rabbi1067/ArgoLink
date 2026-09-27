@@ -1,0 +1,224 @@
+<style>
+    /* Order Commitments + Offer Negotiations: page-local polish on top of the shared design system. */
+    #orderStatsStrip { grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); }
+    .od-stat { gap: 0.5rem; padding: 1rem 1.15rem; }
+    .od-stat .stat-value { font-size: 1.75rem; }
+    .od-stat-hint { font-size: 0.7rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .od-stat-warn { border-color: rgba(245, 158, 11, 0.45); }
+    .od-stat-warn .stat-value { background-image: linear-gradient(120deg, #f59e0b, #fbbf24); -webkit-background-clip: text; background-clip: text; }
+    .od-stat-good .stat-value { background-image: linear-gradient(120deg, #059669, #34d399); -webkit-background-clip: text; background-clip: text; }
+    .od-stat-info .stat-value { background-image: linear-gradient(120deg, #2563eb, #60a5fa); -webkit-background-clip: text; background-clip: text; }
+    .od-stat-muted .stat-value { background-image: linear-gradient(120deg, #475569, #94a3b8); -webkit-background-clip: text; background-clip: text; }
+
+    #ordersTableWrap { border: 1px solid var(--color-border); border-radius: var(--radius); overflow: hidden; }
+    #ordersTableWrap .table th { position: sticky; top: 0; z-index: 1; }
+    #ordersTableWrap .table tbody tr:last-child td { border-bottom: 0; }
+    .od-amount { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .od-pager { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+    .od-offer { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; padding: 1rem 0.25rem; border-bottom: 1px solid var(--color-border); }
+    .od-offer:last-child { border-bottom: 0; }
+    .od-offer-main { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+    .od-offer-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex: 0 0 auto; border-radius: 0.75rem; background: var(--color-background); border: 1px solid var(--color-border); font-size: 1.15rem; }
+    .od-offer-title { margin: 0; font-weight: 600; }
+    .od-offer-meta { margin: 0.15rem 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
+    .od-offer-side { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; justify-content: flex-end; }
+
+    .od-method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.5rem; }
+    .od-method-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .od-method-option span { display: block; text-align: center; padding: 0.65rem 0.5rem; border: 1px solid var(--color-border); border-radius: 0.6rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+    .od-method-option input:checked + span { border-color: var(--color-brand-500); color: var(--color-brand-500); background: rgba(16, 185, 129, 0.08); }
+    .od-method-option input:disabled + span { opacity: 0.45; cursor: not-allowed; }
+
+    @media (max-width: 640px) {
+        .od-offer { flex-direction: column; align-items: flex-start; }
+        .od-offer-side { justify-content: flex-start; }
+    }
+</style>
+
+<section class="page">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+            <p class="section-eyebrow">Fulfilment</p>
+            <h1 class="section-title mb-0">Purchase Orders</h1>
+            <p class="text-muted mb-0" id="ordersContext"></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <select id="orderStatusFilter" class="select" style="max-width: 220px;" aria-label="Filter by status">
+                <option value="">All commitments</option>
+                <option value="PENDING">Pending</option>
+                <option value="OFFER_ACCEPTED">Offer accepted</option>
+                <option value="PAYMENT_PENDING">Payment pending</option>
+                <option value="ESCROW_HELD">In escrow</option>
+                <option value="PAID_CONFIRMED">Paid (escrow)</option>
+                <option value="PROCESSING">Processing</option>
+                <option value="IN_TRANSIT">In Transit</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="DISPUTED">Disputed</option>
+            </select>
+            <button type="button" class="btn btn-secondary btn-sm" data-orders-refresh>Refresh</button>
+        </div>
+    </div>
+
+    <div class="card mb-6">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title mb-0">Order Commitments</h2>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">
+                    Every order you are bound to, from accepted offer through escrow to delivery.
+                </p>
+            </div>
+            <span class="badge badge-info" id="ordersCount">0</span>
+        </div>
+
+        <div id="orderStatsStrip" class="grid mb-6" hidden></div>
+
+        <div id="ordersTableWrap">
+            <div class="empty-state">Loading orders...</div>
+        </div>
+        <div class="od-pager mt-4">
+            <span class="text-muted" id="ordersPageInfo"></span>
+            <div class="flex gap-2">
+                <button type="button" class="btn btn-sm btn-secondary" id="ordersPrevPage" disabled>‹ Prev</button>
+                <button type="button" class="btn btn-sm btn-secondary" id="ordersNextPage" disabled>Next ›</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title mb-0">Offer Negotiations</h2>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">
+                    Six negotiations per page — accept, counter or reject before stock runs out.
+                </p>
+            </div>
+            <span class="badge badge-info" id="offersCount">0</span>
+        </div>
+        <div id="offerList">
+            <div class="empty-state">Loading offers...</div>
+        </div>
+        <div class="od-pager mt-4">
+            <span class="text-muted" id="offersPageInfo"></span>
+            <div class="flex gap-2">
+                <button type="button" class="btn btn-sm btn-secondary" id="offersPrevPage" disabled>‹ Prev</button>
+                <button type="button" class="btn btn-sm btn-secondary" id="offersNextPage" disabled>Next ›</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal-backdrop" id="acceptModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="acceptModalTitle">
+        <button type="button" class="modal-close" data-accept-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="acceptModalTitle">Accept Offer &amp; Place Order</h2>
+        <p class="text-muted mb-4" id="acceptModalSummary"></p>
+        <form id="acceptForm" novalidate>
+            <input type="hidden" id="acceptOfferId">
+            <div class="field">
+                <label>Delivery address (from buyer)</label>
+                <p id="acceptDeliveryAddress" class="text-muted"></p>
+            </div>
+            <p class="text-muted" style="font-size: 0.8rem;">The buyer confirms the final shipping address and pays when the order is created.</p>
+            <button type="submit" class="btn btn-primary btn-block">Confirm Order</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="counterModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="counterModalTitle">
+        <button type="button" class="modal-close" data-counter-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="counterModalTitle">Counter Offer</h2>
+        <p class="text-muted mb-4" id="counterModalListing"></p>
+        <form id="counterForm" novalidate>
+            <input type="hidden" id="counterOfferId">
+            <div class="field">
+                <label for="counterQuantity">Offered quantity</label>
+                <input id="counterQuantity" class="input" type="number" name="offeredQuantity" min="0.01" step="0.01" required>
+            </div>
+            <div class="field">
+                <label for="counterPrice">Offered price per unit (৳)</label>
+                <input id="counterPrice" class="input" type="number" name="offeredPrice" min="0.01" step="0.01" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Counter Offer</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="paymentModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+        <button type="button" class="modal-close" data-payment-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="paymentModalTitle">Confirm Payment</h2>
+        <p class="text-muted mb-4" id="paymentModalSummary"></p>
+        <form id="paymentForm" novalidate>
+            <input type="hidden" id="paymentOrderId">
+            <input type="hidden" id="paymentTotal">
+            <div class="field">
+                <label for="paymentAddress">Shipping address</label>
+                <input id="paymentAddress" class="input" type="text" placeholder="House, road, district" required>
+            </div>
+            <div class="field">
+                <span class="field-label">Payment method</span>
+                <div class="od-method-grid">
+                    <label class="od-method-option">
+                        <input type="radio" name="paymentMethodChoice" value="BKASH" id="paymentMethodBkash" checked>
+                        <span>bKash</span>
+                    </label>
+                    <label class="od-method-option">
+                        <input type="radio" name="paymentMethodChoice" value="NAGAD" id="paymentMethodNagad">
+                        <span>Nagad</span>
+                    </label>
+                    <label class="od-method-option">
+                        <input type="radio" name="paymentMethodChoice" value="CARD" id="paymentMethodCard">
+                        <span>Card</span>
+                    </label>
+                    <label class="od-method-option">
+                        <input type="radio" name="paymentMethodChoice" value="SSLCOMMERZ" id="paymentMethodSsl">
+                        <span>SSLCommerz</span>
+                    </label>
+                </div>
+                <select id="paymentMethod" class="select" hidden aria-label="Payment method">
+                    <option value="BKASH">bKash</option>
+                    <option value="NAGAD">Nagad</option>
+                    <option value="CARD">Card</option>
+                    <option value="SSLCOMMERZ">SSLCommerz sandbox</option>
+                </select>
+            </div>
+            <div id="paymentAccountFields" hidden>
+                <div class="field">
+                    <label for="paymentAccountNumber" id="paymentAccountNumberLabel">bKash number</label>
+                    <input id="paymentAccountNumber" class="input" type="tel" inputmode="numeric"
+                           autocomplete="off" placeholder="01XXXXXXXXX">
+                </div>
+                <div class="field">
+                    <label for="paymentAccountPin" id="paymentAccountPinLabel">bKash PIN</label>
+                    <input id="paymentAccountPin" class="input" type="password" inputmode="numeric"
+                           autocomplete="off" placeholder="4-6 digits">
+                </div>
+            </div>
+            <p class="text-muted" id="paymentRailNote" style="font-size: 0.8rem;"></p>
+            <p class="text-muted" style="font-size: 0.8rem;">The amount is held in escrow and released to the farmer on delivery.</p>
+            <button type="submit" class="btn btn-primary btn-block">Pay &amp; Confirm</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="trackingModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="trackingModalTitle">
+        <button type="button" class="modal-close" data-tracking-modal-close aria-label="Close">×</button>
+        <h2 class="modal-title" id="trackingModalTitle">Update Live Position</h2>
+        <p class="text-muted mb-4" id="trackingModalSummary"></p>
+        <form id="trackingForm" novalidate>
+            <input type="hidden" id="trackingOrderId">
+            <div class="field">
+                <label for="trackingLatitude">Latitude</label>
+                <input id="trackingLatitude" class="input" type="number" step="0.000001" min="-90" max="90" placeholder="23.810300" required>
+            </div>
+            <div class="field">
+                <label for="trackingLongitude">Longitude</label>
+                <input id="trackingLongitude" class="input" type="number" step="0.000001" min="-180" max="180" placeholder="90.412500" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Save Position</button>
+        </form>
+    </div>
+</div>
