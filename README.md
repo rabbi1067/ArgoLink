@@ -15,8 +15,8 @@
 
 **[Live Demo](https://argolink.onrender.com/)** · **[Source Code](https://github.com/rabbi1067/ArgoLink)** · **[Deploy](#-deployment-render-free-tier)** · **[Setup](#-local-setup)**
 
-![Stats](https://github-readme-stats.vercel.app/api?username=rabbi1067&show_icons=true&theme=dark&hide_border=true&bg_color=0d1117&title_color=059669&text_color=ffffff&icon_color=34d399)
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=rabbi1067&layout=compact&theme=dark&hide_border=true&bg_color=0d1117&title_color=059669&text_color=ffffff)
+![Streak](https://streak-stats.demolab.com?user=rabbi1067&theme=dark&hide_border=true&background=0d1117)
+![Skills](https://skillicons.dev/icons?i=java,spring,mongodb,docker,js,html,css&theme=dark)
 </div>
 
 ---
