@@ -1,6 +1,6 @@
 <div align="center">
 
-# AgroLink v2
+# AgroLink
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=800&color=059669&center=true&vCenter=true&width=700&lines=Farm+to+Market%2C+Directly+%26+Transparently;Farmers+sell+directly.+Buyers+source+fresh.;No+middlemen.+Just+fair+trade.)](https://github.com/rabbi1067/ArgoLink)
 
