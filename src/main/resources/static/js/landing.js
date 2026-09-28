@@ -146,8 +146,14 @@
                 </button>`;
         },
 
-        cardMarkup(listing) {
-            const price = Number(listing.pricePerUnit || 0).toLocaleString("en-IN", {
+        /** Only our own uploads or https images are rendered (blocks javascript:/data: URLs). */
+        safeImage(url) {
+            if (typeof url !== "string" || !url) return "";
+            if (url.startsWith("/api/v1/files/") || url.startsWith("https://")) return url;
+            return "";
+        },
+
+        cardMarkup(listing) {            const price = Number(listing.pricePerUnit || 0).toLocaleString("en-IN", {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
             });
@@ -157,9 +163,14 @@
             const cropName = escapeHtml(listing.cropName || "Unnamed produce");
             const quantity = Number(listing.availableQuantity || 0).toLocaleString("en-IN");
             const unit = escapeHtml(listing.unit || "kg");
+            const image = this.safeImage(listing.imageUrl);
+            const media = image
+                ? `<div class="crop-media"><img src="${image}" alt="${cropName}" loading="lazy"></div>`
+                : `<div class="crop-media"><span class="crop-placeholder" aria-hidden="true">🌾</span></div>`;
 
             return `
                 <div class="card crop-card">
+                    ${media}
                     <div class="flex items-start justify-between gap-2">
                         <h3 class="crop-name">${cropName}</h3>
                         <span class="badge badge-success">${category}</span>

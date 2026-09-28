@@ -1,0 +1,143 @@
+# TEST-ONLY copy of the main application.yml (same filename shadows it on the test classpath).
+# Keep in sync when main config keys change. Only the Mongo URI (shared dev DB,
+# which these tests assert against) and the dummy JWT secret differ.
+spring:
+  application:
+    name: agrolink
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:5MB}
+      max-request-size: ${MAX_REQUEST_SIZE:5MB}
+  data:
+    mongodb:
+      # No default: fail fast with a clear error instead of silently pointing
+      # somewhere. Set MONGODB_URI env (see .env.example). Local: run MongoDB
+      # on mongodb://localhost:27017/agrolink and export that URI.
+      uri: ${MONGODB_URI:mongodb+srv://ss:I6AeyE24ZrVEpeQp@springmongo.zhwoqy8.mongodb.net/rabbi2?appName=springMongo}
+      auto-index-creation: true
+  cache:
+    type: simple
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+  tomcat:
+    # Small box (Render free): cap threads so a traffic spike queues instead
+    # of eating all 512 MB RAM.
+    threads:
+      max: ${TOMCAT_THREADS_MAX:50}
+      min-spare: ${TOMCAT_THREADS_MIN_SPARE:5}
+    connection-timeout: ${TOMCAT_CONNECTION_TIMEOUT:10s}
+    max-http-form-post-size: ${TOMCAT_MAX_FORM_POST_SIZE:256KB}
+    max-swallow-size: ${TOMCAT_MAX_SWALLOW_SIZE:1MB}
+
+agrolink:
+  demo:
+    # Public demo logins (see com.agrolink.app.demo + static/js/demo.js).
+    # Keep true for an open demo; set false on a deploy where strangers must
+    # not browse the project as super-admin, even read-only.
+    enabled: ${AGROLINK_DEMO_ENABLED:true}
+  security:
+    rate-limit:
+      # First defence against anonymous junk traffic (brute force, spam
+      # register, reset-email bombing). Per IP per minute, plus one global
+      # ceiling that IP rotation cannot dodge.
+      enabled: ${AGROLINK_RATE_LIMIT_ENABLED:true}
+      auth-per-minute: ${AGROLINK_RATE_LIMIT_AUTH:10}
+      public-per-minute: ${AGROLINK_RATE_LIMIT_PUBLIC:60}
+      api-per-minute: ${AGROLINK_RATE_LIMIT_API:120}
+      global-per-minute: ${AGROLINK_RATE_LIMIT_GLOBAL:600}
+    # JSON bodies bigger than this never reach Jackson (413). File uploads
+    # keep their own 5 MB multipart cap.
+    max-json-bytes: ${AGROLINK_MAX_JSON_BYTES:262144}
+    auto-suspend:
+      # Spammy accounts deactivate themselves: repeated rate-limit hits or a
+      # flood of creations suspends the account, and only an admin can bring
+      # it back (User Management). Staff accounts are never touched.
+      enabled: ${AGROLINK_AUTO_SUSPEND_ENABLED:true}
+      strikes: ${AGROLINK_AUTO_SUSPEND_STRIKES:5}
+      strike-window-minutes: ${AGROLINK_AUTO_SUSPEND_WINDOW_MINUTES:30}
+      writes-per-hour: ${AGROLINK_AUTO_SUSPEND_WRITES_PER_HOUR:60}
+      registers-per-hour-per-ip: ${AGROLINK_AUTO_SUSPEND_REGISTERS_PER_HOUR:20}
+  jwt:
+    # No default secret: the app refuses to start without JWT_SECRET, so a
+    # forgotten env var can never silently sign tokens with a public key.
+    secret: ${JWT_SECRET:test-only-jwt-secret-not-for-production-use-0123456789abcdef}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:4200,http://localhost:8081}
+  cloudinary:
+    # No credentials committed: without them image uploads fall back to
+    # MongoDB storage (works, just not CDN). Set the three env vars for
+    # Cloudinary (see .env.example).
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+    api-key: ${CLOUDINARY_API_KEY:}
+    api-secret: ${CLOUDINARY_API_SECRET:}
+    avatar-folder: ${CLOUDINARY_AVATAR_FOLDER:agrolink/avatars}
+    produce-folder: ${CLOUDINARY_PRODUCE_FOLDER:agrolink/produce}
+  brevo:
+    # Free transactional email (300/day). Create a free key at brevo.com under
+    # SMTP & API -> API Keys, and verify BREVO_SENDER_EMAIL as a sender there.
+    # Left blank, reset codes are only logged server-side (dev mode).
+    api-key: ${BREVO_API_KEY:}
+    sender-email: ${BREVO_SENDER_EMAIL:}
+    sender-name: ${BREVO_SENDER_NAME:AgroLink}
+  weatherapi:
+    # Fallback forecast provider for hosts whose shared IP Open-Meteo
+    # rate-limits (HTTP 429). Free key at weatherapi.com (1M calls/month,
+    # quota per key, no card). Left blank, Open-Meteo is the only source.
+    api-key: ${WEATHERAPI_KEY:}
+  emailjs:
+    # Client asked for EmailJS. Free signup at emailjs.com, connect an email
+    # service, then create a template whose "To Email" is {{user_email}} and
+    # whose body uses {{user_name}} and {{code}}. Left blank, reset codes are
+    # only logged server-side (dev mode).
+    service-id: ${EMAILJS_SERVICE_ID:}
+    template-id: ${EMAILJS_TEMPLATE_ID:}
+    public-key: ${EMAILJS_PUBLIC_KEY:}
+    private-key: ${EMAILJS_PRIVATE_KEY:}
+  invoice:
+    delivery-charge: ${AGROLINK_INVOICE_DELIVERY_CHARGE:50}
+    tax-rate-percent: ${AGROLINK_INVOICE_TAX_RATE_PERCENT:0}
+    discount: ${AGROLINK_INVOICE_DISCOUNT:0}
+    payment-due-days: ${AGROLINK_INVOICE_PAYMENT_DUE_DAYS:7}
+  payment:
+    # bKash / Nagad / Card have no public verification endpoint, so by default they are accepted on
+    # sandbox rules only. Set this to true to refuse any payment that no live gateway confirmed.
+    require-gateway-verification: ${AGROLINK_PAYMENT_REQUIRE_GATEWAY_VERIFICATION:false}
+    sslcommerz:
+      # Leave blank to run SSLCommerz in simulation mode; add sandbox credentials to verify live.
+      store-id: ${SSLCOMMERZ_STORE_ID:}
+      store-password: ${SSLCOMMERZ_STORE_PASSWORD:}
+      validation-url: ${SSLCOMMERZ_VALIDATION_URL:https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php}
+    bkash:
+      # bKash Tokenized Checkout. The buyer types their bKash number and PIN on bKash's own page,
+      # so AgroLink never stores a PIN. Without these credentials the bKash rail stays disabled
+      # and the checkout endpoint reports it instead of pretending to charge anything.
+      app-key: ${BKASH_APP_KEY:}
+      app-secret: ${BKASH_APP_SECRET:}
+      username: ${BKASH_USERNAME:}
+      password: ${BKASH_PASSWORD:}
+      base-url: ${BKASH_BASE_URL:https://tokenized.sandbox.bka.sh/v1.2.0-beta/tokenized/checkout}
+      # Public base URL of this deployment; bKash redirects the buyer back here after the PIN.
+      callback-base-url: ${AGROLINK_PUBLIC_BASE_URL:http://localhost:8080}
+      # Sandbox accepts any bKash number + any 4-6 digit PIN. Set false for production.
+      sandbox: ${BKASH_SANDBOX:true}
+  ai:
+    gemini:
+      api-key: ${GEMINI_API_KEY:}
+      model: ${GEMINI_MODEL:gemini-3.8-flash}
+      fallback-model: ${GEMINI_FALLBACK_MODEL:gemini-3.5-flash-lite}
+    rate-limit:
+      per-minute: ${AI_RATE_PER_MINUTE:6}
+      per-day: ${AI_RATE_PER_DAY:60}
+
+logging:
+  level:
+    com.agrolink.app: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: INFO
