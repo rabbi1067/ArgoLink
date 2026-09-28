@@ -169,6 +169,9 @@ const I18n = (() => {
     add("shell.menu", "Menu", "মেনু");
     add("shell.openMenu", "Open menu", "মেনু খুলুন");
     add("shell.openProfile", "Open profile menu", "প্রোফাইল মেনু খুলুন");
+    add("shell.idleWarn", "No activity for a while - logging out in 1 minute. Click anywhere to stay signed in.",
+        "অনেকক্ষণ কোনো কাজ হয়নি - ১ মিনিটে লগআউট হবে। থাকতে চাইলে কোথাও ক্লিক করুন।");
+    add("shell.idleOut", "Logged out due to inactivity", "নিষ্ক্রিয়তার জন্য লগআউট হয়েছে");
 
     /* ----------------------------------------------------------------- routes */
 

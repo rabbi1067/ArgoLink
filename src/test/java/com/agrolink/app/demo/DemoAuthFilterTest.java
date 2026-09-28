@@ -196,6 +196,20 @@ class DemoAuthFilterTest {
         assertTrue(response.getContentAsString().contains("demo answer"));
     }
 
+    @Test
+    void demoFarmer_usersList_isNotIntercepted() throws Exception {
+        String token = demoLogin();
+        AtomicInteger passed = new AtomicInteger();
+        FilterChain chain = (req, res) -> passed.incrementAndGet();
+        MockHttpServletRequest request = json("GET", "/api/v1/users", null);
+        request.addHeader("Authorization", "Bearer " + token);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        // readService is null here: passthrough must reach the chain (which
+        // would NPE on interception), the real chain answers 403 downstream.
+        filter.doFilter(request, response, chain);
+        assertEquals(1, passed.get());
+    }
+
     private UserRepository userRepository() {
         return (UserRepository) Proxy.newProxyInstance(
                 getClass().getClassLoader(),

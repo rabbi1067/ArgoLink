@@ -365,9 +365,9 @@ public class DemoAuthFilter extends OncePerRequestFilter {
             data = readService.allConversations(demo);
         } else if ("/api/v1/invoices/my".equals(path)) {
             data = readService.allInvoices();
-        } else if ("/api/v1/users".equals(path)) {
+        } else if ("/api/v1/users".equals(path) && isPrivilegedDemo(demo)) {
             data = readService.allUsers(demo);
-        } else if (path.startsWith("/api/v1/users/by-role/")) {
+        } else if (path.startsWith("/api/v1/users/by-role/") && isPrivilegedDemo(demo)) {
             data = readService.usersByRole(path.substring("/api/v1/users/by-role/".length()), demo);
         } else if ("/api/v1/suggestions/buyer".equals(path)
                 && demo.role() == com.agrolink.app.model.Role.BUYER) {
@@ -445,6 +445,15 @@ public class DemoAuthFilter extends OncePerRequestFilter {
             return as;
         }
         return demo.role() == com.agrolink.app.model.Role.FARMER ? "FARMER" : "BUYER";
+    }
+
+    /**
+     * The user directory stays staff-only, exactly like the real endpoints:
+     * other demo roles fall through to the chain and get the normal 403.
+     */
+    private boolean isPrivilegedDemo(DemoAccounts.Entry demo) {
+        return demo.role() == com.agrolink.app.model.Role.ADMIN
+                || demo.role() == com.agrolink.app.model.Role.SUPER_ADMIN;
     }
 
     private void writeData(HttpServletResponse response, Object data) throws IOException {

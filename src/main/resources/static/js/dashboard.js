@@ -94,6 +94,7 @@
             this.bindTopbar();
             this.bindDrawer();
             this.bindTheme();
+            this.bindIdleLogout();
             if (window.I18n) {
                 I18n.init();
                 document.addEventListener("langchange", () => {
@@ -212,6 +213,59 @@
             setTimeout(() => {
                 window.location.href = "/";
             }, 300);
+        },
+
+        /**
+         * Shared/public computer safety: 30 minutes without any click, key,
+         * scroll or touch logs the account out (1-minute warning first).
+         * Each tab tracks itself; activity is throttled so mouse wiggles
+         * don't churn timers.
+         */
+        bindIdleLogout() {
+            const TIMEOUT = 30 * 60 * 1000;
+            const WARN_BEFORE = 60 * 1000;
+            let warnTimer = null;
+            let outTimer = null;
+            let lastMove = 0;
+
+            const clear = () => {
+                if (warnTimer) clearTimeout(warnTimer);
+                if (outTimer) clearTimeout(outTimer);
+                warnTimer = null;
+                outTimer = null;
+            };
+
+            const logout = () => {
+                clear();
+                window.Api.logout();
+                if (window.Toast) Toast.info(window.t ? t("shell.idleOut") : "Logged out due to inactivity", 8000);
+                setTimeout(() => window.location.replace("/"), 1500);
+            };
+
+            const schedule = () => {
+                clear();
+                warnTimer = setTimeout(() => {
+                    if (window.Toast) Toast.info(window.t ? t("shell.idleWarn") : "No activity for a while - logging out in 1 minute. Click anywhere to stay signed in.", 55000);
+                    outTimer = setTimeout(logout, WARN_BEFORE);
+                }, Math.max(1000, TIMEOUT - WARN_BEFORE));
+            };
+
+            const bump = () => {
+                if (!window.Api || !Api.isAuthenticated()) return;
+                schedule();
+            };
+
+            ["click", "keydown", "scroll", "touchstart"].forEach((event) =>
+                document.addEventListener(event, bump, { capture: true, passive: true }));
+            document.addEventListener("mousemove", () => {
+                const now = Date.now();
+                if (now - lastMove > 60 * 1000) {
+                    lastMove = now;
+                    bump();
+                }
+            }, { passive: true });
+
+            schedule();
         },
 
         bindProfileMenu() {
