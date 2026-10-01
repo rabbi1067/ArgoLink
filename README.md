@@ -21,7 +21,7 @@
 
 ---
 
-## What makes AgroLink v2 special
+## What makes AgroLink special
 
 <table>
 <tr>
